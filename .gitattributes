@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.zip -text
+*.md whitespace=-blank-at-eol
+deployment/licenses/* -text -whitespace

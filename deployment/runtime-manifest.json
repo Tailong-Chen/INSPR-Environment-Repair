@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "runtime": {
+    "path": "runtime/win64/cudart64_75.dll",
+    "sha256": "D4210F400BCF3BC2553FC7C62493E96554C1B3B82D346DB8ADC84C75CEA124D6",
+    "publisher": "NVIDIA Corporation",
+    "source": "https://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_windows.exe",
+    "sourceSha256": "AAE2724C8FD439C6E58AB8497DEF9910E38F637E27401CD1AA634A22D3265F9F"
+  },
+  "installers": [
+    {
+      "version": "2008",
+      "path": "deployment/installers/vcredist2008_x64.exe",
+      "sha256": "C5E273A4A16AB4D5471E91C7477719A2F45DDADB76C7F98A38FA5074A6838654",
+      "publisher": "Microsoft Corporation",
+      "arguments": "/q /norestart",
+      "source": "https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x64.exe"
+    },
+    {
+      "version": "2010",
+      "path": "deployment/installers/vcredist2010_x64.exe",
+      "sha256": "F3B7A76D84D23F91957AA18456A14B4E90609E4CE8194C5653384ED38DADA6F3",
+      "publisher": "Microsoft Corporation",
+      "arguments": "/q /norestart",
+      "source": "https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe"
+    },
+    {
+      "version": "2013",
+      "path": "deployment/installers/vcredist2013_x64.exe",
+      "sha256": "A4BBA7701E355AE29C403431F871A537897C363E215CAFE706615E270984F17C",
+      "publisher": "Microsoft Corporation",
+      "arguments": "/install /quiet /norestart",
+      "source": "https://download.visualstudio.microsoft.com/download/pr/10912041/cee5d6bca2ddbcd039da727bf4acb48a/vcredist_x64.exe"
+    }
+  ]
+}

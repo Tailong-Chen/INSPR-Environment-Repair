@@ -1,0 +1,9 @@
+/deployment/cache/
+/deployment/logs/
+/deployment/staging/
+/deployment/backups/
+/deployment/publication/
+/deployment/installers/
+/runtime/win64/*.dll
+/tests/local_cuda_report.txt
+/INSPR for astigmatism-based setup/
