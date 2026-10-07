@@ -6,6 +6,8 @@ $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powersh
 if ($LASTEXITCODE -ne 0) { throw 'Runtime package validation failed.' }
 $files = @(
     'Start-INSPR.cmd', 'setup_inspr_cuda.m', 'CUDA_SETUP.md', 'INSPR_Environment_Guide.md',
+    'INSPR_Environment_Guide_EN.md', 'docs\images\extract-to-project.png',
+    'docs\images\run-main-in-matlab.png',
     'deployment\Start-INSPR.ps1', 'deployment\runtime-manifest.json',
     'deployment\inspr_gpu_smoketest.m', 'deployment\inspr_runtime_probe.m',
     'deployment\inspr_start_gui.m', 'deployment\licenses\NVIDIA-CUDA-7.5-EULA.txt',

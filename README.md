@@ -1,51 +1,63 @@
-# INSPR Windows CUDA 环境修复包
+# INSPR Windows CUDA Environment Repair
 
-为已有的 **INSPR 散光定位工具箱**补齐旧版运行库，并配置自动加载路径。首次运行修复程序后，日常直接在 MATLAB 中运行项目的 `main.m`。
+Repair missing runtime dependencies for an **existing INSPR astigmatism toolbox project** on 64-bit Windows. Run the repair once; afterwards, open MATLAB normally and run the project's `main.m`.
 
-**[下载完整修复包 ZIP](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip)** · **[中文使用说明与原理](INSPR_Environment_Guide.md)** · **[发布版本](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases)**
+**[Download the complete repair ZIP](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip)** · **[English illustrated guide](INSPR_Environment_Guide_EN.md)** · **[中文说明](INSPR_Environment_Guide.md)**
 
-## 下载后怎样使用
+You need the complete INSPR application, a working 64-bit Windows MATLAB installation, and an NVIDIA GPU driver. This repository provides the repair package, not the full INSPR application.
 
-1. 下载上面的 `INSPR_Environment_Repair.zip`，将**全部内容**解压到已有的 `INSPR-master` 根目录，使 `Start-INSPR.cmd` 与 `INSPR for astigmatism-based setup` 文件夹并列。
-2. **首次**双击 `Start-INSPR.cmd`。如缺少微软运行库，允许官方安装器的管理员权限提示。等待环境检查和真实 GPU 定位测试通过。
-3. 以后正常打开 MATLAB，运行 `INSPR for astigmatism-based setup/INSPR astigmatism toolbox/main.m`，无需再次点击 CMD。
+## 1. Download and copy to the right folder
 
-若通过 GitHub 的 **Code → Download ZIP** 下载整个仓库，请先解压仓库，再把其中的 `INSPR_Environment_Repair.zip` 解压到已有的 INSPR 项目中。也可[直接下载仓库内的修复 ZIP](https://github.com/Tailong-Chen/INSPR-Environment-Repair/raw/refs/heads/main/INSPR_Environment_Repair.zip)。
+Download **`INSPR_Environment_Repair.zip`** using the link above. In Windows File Explorer:
 
-修复包约 22.6 MB，已包含匹配的 CUDA DLL 和微软运行库安装器。接收方无需另行下载 CUDA 7.5 Toolkit、Visual Studio 或 Python。文件校验值见 [SHA256SUMS.txt](SHA256SUMS.txt)。
+1. Extract the ZIP, then open the extracted folder.
+2. Select **everything inside** (`Ctrl+A`) and copy it (`Ctrl+C`).
+3. Open your **existing INSPR project root**: the folder that already contains `INSPR for astigmatism-based setup`.
+4. Paste the repair contents there (`Ctrl+V`). Merge folders and update the repair files if you are replacing an older package.
 
-## 使用前提
+![Copy every repair file into the existing project root. Start-INSPR.cmd and the INSPR setup folder must be at the same level; avoid an extra wrapper folder.](docs/images/extract-to-project.png)
 
-- 已有完整的 INSPR 散光项目；本仓库是环境修复工具，不包含完整 INSPR 程序或实验数据。
-- 已安装可正常启动、授权可用的 Windows 64 位 MATLAB，以及适合本机 NVIDIA 显卡的驱动。
-- 缺少 VC++ 运行库时，需要允许安装这些系统组件。修复工具不安装 MATLAB、付费 MATLAB 工具箱或显卡驱动。
+**Check before continuing:** `Start-INSPR.cmd` must be **beside** `INSPR for astigmatism-based setup`, with the same parent folder. It should not be inside an extra `INSPR_Environment_Repair` folder or inside the toolbox folder.
 
-## 它修复什么
+The illustrated path `C:\SMLM\INSPR-master` is only an example. Use your own project location.
 
-项目的旧 MEX 程序明确依赖 `cudart64_75.dll`。安装新版 CUDA 不代表同时具备这个旧版 DLL，因此仍可能报“Please install CUDA environment”或“无效 MEX 文件：找不到指定的模块”。
+## 2. Run the repair once
 
-修复工具校验官方 DLL/安装器的散列值和发布者签名，按需安装 VC++ 2008/2010/2013 x64 运行库，并给原 `main.m` 加入自动配置入口。原文件备份在 `deployment/backups`。以后运行 `main.m`，会自动把项目的 `runtime/win64` 加入当前 MATLAB 进程的 DLL 搜索路径；不修改系统 PATH，也不替换定位算法或 MEX。
+Double-click **`Start-INSPR.cmd` in the existing project root**. Allow the official Microsoft installer permission prompt if a required runtime is missing. Wait for the environment checks and the real GPU localization test to pass; the launcher then opens INSPR.
 
-## MATLAB 版本和验证范围
+The ZIP includes the matching CUDA DLL and Microsoft runtime installers. You do not need to install the complete CUDA Toolkit, Visual Studio, or Python. SHA-256 values are listed in [SHA256SUMS.txt](SHA256SUMS.txt).
 
-配置不绑定某个 MATLAB 安装目录。多个 MATLAB 默认选择较新的版本，也可以在 INSPR 项目根目录的 PowerShell 中指定：
+## 3. Afterwards, run main.m in MATLAB
+
+Open the file shown below in the MATLAB Editor and click **Run**. Alternatively, set MATLAB's **Current Folder** to `INSPR astigmatism toolbox` and enter `main`.
+
+![Inside your existing project, open INSPR for astigmatism-based setup, then INSPR astigmatism toolbox, then run the entire main.m script in MATLAB.](docs/images/run-main-in-matlab.png)
+
+Run the **whole `main.m` script** so its automatic path setup executes. You do not need to click the CMD again for everyday use. Keep the `deployment` and `runtime` folders with your project.
+
+## If you downloaded the whole GitHub repository
+
+GitHub's **Code → Download ZIP** and **Source code** archives contain this repository. Extract that archive, find **`INSPR_Environment_Repair.zip` inside it**, and follow step 1 above using this inner repair ZIP. The folder `INSPR-Environment-Repair-main` is not your existing INSPR application folder.
+
+You can also [download the repair ZIP stored in the repository](https://github.com/Tailong-Chen/INSPR-Environment-Repair/raw/refs/heads/main/INSPR_Environment_Repair.zip).
+
+## Compatibility and troubleshooting
+
+The setup does not hard-code a MATLAB installation path. To select a particular MATLAB version, run this in PowerShell from your INSPR project root, replacing the example path:
 
 ```powershell
 .\Start-INSPR.cmd -MatlabExe "D:\MATLAB\R2024a\bin\matlab.exe"
 ```
 
-首次修复会在所选 MATLAB 中实际测试 GUI、分割、重建和三维 GPU 定位，日志保存在 `deployment/logs`。
+Verified on **Windows 11 / MATLAB R2024a / RTX 3060 Ti / driver 591.86**, including paths with spaces and Chinese characters and direct `main.m` startup without the launcher's PATH. Other MATLAB versions, RTX 2080 Ti, and clean Windows installations require validation on the target machine. The synthetic test checks execution, not experimental localization accuracy.
 
-截至 2026-10-08，已在 **Windows 11 / MATLAB R2024a / RTX 3060 Ti / 驱动 591.86** 验证通过，也测试了中文和空格路径，以及不继承启动器 PATH 时直接运行 `main.m`。其他 MATLAB 版本、RTX 2080 Ti 和全新系统安装场景仍需现场验证。合成数据自检验证环境可运行，不替代实验数据的定位精度验证。
+If setup fails, keep that run's files from `deployment/logs` and see the [illustrated guide's troubleshooting section](INSPR_Environment_Guide_EN.md#troubleshooting). The tool does not install MATLAB, paid MATLAB toolboxes, or a graphics driver; MEX/GPU compatibility problems can still require recompilation.
 
-如果自检失败，保留该次 `*_launcher.txt`、`*_matlab.txt`、`*_environment.txt` 和 `*_status.txt`，按[中文说明的故障处理部分](INSPR_Environment_Guide.md#6-常见问题与处理)排查。旧 MEX 的 ABI 或 GPU 内核兼容问题可能需要重新编译，不能仅靠修改路径解决。
+## How it works and where the files come from
 
-## 文件与来源
+The project's old MEX files require `cudart64_75.dll` and legacy Microsoft VC++ runtimes. The repair verifies the official packages, installs missing runtimes, backs up `main.m`, and adds an automatic setup block. Each run of `main.m` adds the project's private DLL directory to that MATLAB process's PATH. The system PATH and scientific MEX binaries remain unchanged.
 
-- [INSPR_Environment_Guide.md](INSPR_Environment_Guide.md)：首次安装、日常启动、原理、兼容性和恢复方法。
-- [CUDA_SETUP.md](CUDA_SETUP.md)：MEX 依赖及详细诊断说明。
-- `deployment/`、`setup_inspr_cuda.m`、`tests/`：修复、诊断和验证源代码。
-- [runtime-manifest.json](deployment/runtime-manifest.json)：NVIDIA / Microsoft 官方来源和 SHA-256。
-- [NVIDIA CUDA 7.5 原版许可](deployment/licenses/NVIDIA-CUDA-7.5-EULA.txt)；Microsoft 安装器保留其内置许可。第三方二进制适用各自许可。
-
-维护者需在完整 INSPR 开发目录中使用这些脚本和测试；源码仓库不单独展开存储 DLL/安装器，它们包含在发布 ZIP 中。修改后用 `deployment/Build-RepairPackage.ps1` 重新打包，并在发布前运行实际 MATLAB/GPU 验证。
+- [English user guide](INSPR_Environment_Guide_EN.md) · [中文使用说明](INSPR_Environment_Guide.md) · [Detailed dependency notes (Chinese)](CUDA_SETUP.md)
+- [Official sources and runtime checksums](deployment/runtime-manifest.json) · [NVIDIA CUDA 7.5 license](deployment/licenses/NVIDIA-CUDA-7.5-EULA.txt). Microsoft installers retain their included licenses.
+- Repair/diagnostic source is in `deployment/`, `setup_inspr_cuda.m`, and `tests/`. Run development tests in a complete INSPR project. The ready-to-use DLLs and installers are bundled in the repair ZIP.
+- The folder illustrations can be regenerated with `docs/render_quickstart.py` and Pillow; Python is not required by recipients.

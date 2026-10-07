@@ -9,6 +9,8 @@
 GitHub 公开仓库：[Tailong-Chen/INSPR-Environment-Repair](https://github.com/Tailong-Chen/INSPR-Environment-Repair)  
 完整修复包：[下载 INSPR_Environment_Repair.zip](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip)
 
+[English illustrated guide](INSPR_Environment_Guide_EN.md)
+
 ## 1. 这份修复包解决什么问题
 
 运行 GPU 三维定位时，可能出现以下提示：
@@ -34,7 +36,11 @@ MEX 文件 listGPUs.mexw64 无效：找不到指定的模块。
 电脑应已安装可正常启动、授权可用的 **Windows 64 位 MATLAB**，以及适合本机 NVIDIA 显卡的驱动。修复包不安装 MATLAB、MATLAB 工具箱或显卡驱动。
 
 1. 准备完整的 INSPR 项目，以及 `INSPR_Environment_Repair.zip`。修复 ZIP 是补充包，不包含完整项目和实验数据。
-2. 将 ZIP 的**全部内容**解压到现有项目根目录。解压完成后，目录应类似：
+2. 在资源管理器中先解压 ZIP，打开解压出来的文件夹，按 `Ctrl+A` 选择里面的**全部内容**，复制到已有的 INSPR 项目根目录。所谓根目录，是已经包含 `INSPR for astigmatism-based setup` 文件夹的那一层。不要把整个解压文件夹再套进项目里，也不要放到工具箱子目录。
+
+   ![把修复包全部内容复制到已有项目根目录，CMD 与 INSPR setup 文件夹同级。](docs/images/extract-to-project.png)
+
+   图中的 `C:\SMLM\INSPR-master` 只是示例，可以换成你自己项目所在的位置。复制完成后，目录应类似：
 
    ```text
    INSPR-master/
@@ -67,6 +73,8 @@ One-time setup complete. In future, open MATLAB normally and run the project mai
 ```text
 INSPR-master/INSPR for astigmatism-based setup/INSPR astigmatism toolbox
 ```
+
+![从项目根目录依次进入散光 setup、toolbox 文件夹，在 MATLAB 中运行完整 main.m。](docs/images/run-main-in-matlab.png)
 
 在命令窗口输入：
 
