@@ -3,3 +3,5 @@
 *.zip -text
 *.md whitespace=-blank-at-eol
 deployment/licenses/* -text -whitespace
+*.dll -text
+*.exe -text

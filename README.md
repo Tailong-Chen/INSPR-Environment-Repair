@@ -4,11 +4,11 @@ This package supplies the CUDA and Visual C++ runtimes needed by the INSPR astig
 
 You need an existing INSPR project, 64-bit Windows MATLAB, and an NVIDIA GPU with its driver installed.
 
-**[Download the repair ZIP](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip)** · [English guide](INSPR_Environment_Guide_EN.md) · [中文说明](INSPR_Environment_Guide.md)
+**[Download the repository](https://github.com/Tailong-Chen/INSPR-Environment-Repair/archive/refs/heads/main.zip)** · [English guide](INSPR_Environment_Guide_EN.md) · [中文说明](INSPR_Environment_Guide.md)
 
 ## Install
 
-1. Extract `INSPR_Environment_Repair.zip` and copy **all its contents** into your existing INSPR project folder.
+1. Download this repository using the link above or **Code → Download ZIP**. Extract it once, open `INSPR-Environment-Repair-main`, and copy **all its contents** into your existing INSPR project folder.
 2. Check that `Start-INSPR.cmd` sits beside the setup folder, as shown below. Either toolbox, or both, can be present.
 3. Double-click `Start-INSPR.cmd`. Allow the Microsoft runtime installer if prompted, then wait for the GPU tests to finish.
 
@@ -16,9 +16,9 @@ You need an existing INSPR project, 64-bit Windows MATLAB, and an NVIDIA GPU wit
 
 The launcher checks each installed toolbox in a separate MATLAB process. After the tests pass, it opens INSPR; if both toolboxes are installed, you choose which one to open.
 
-The ZIP includes the required runtime files. No CUDA Toolkit, Visual Studio, or Python installation is needed. When updating an older repair package, replace its files and run the CMD once again.
+The repository includes the required runtime files in `runtime/win64` and `deployment/installers`. No CUDA Toolkit, Visual Studio, or Python installation is needed. When updating an older repair package, replace its files and run the CMD once again.
 
-If you used GitHub’s **Code → Download ZIP**, extract that archive first, then use the `INSPR_Environment_Repair.zip` inside it.
+There is no inner repair ZIP. After copying, this file should exist: `runtime/win64/cudart64_75.dll`. Keep the three `.exe` files under `deployment/installers` as well.
 
 ## Run INSPR
 
@@ -58,6 +58,6 @@ The repair backs up `main.m` under `deployment/backups` and adds a startup block
 
 ## Sources
 
-Runtime downloads, checksums, and publishers are listed in [runtime-manifest.json](deployment/runtime-manifest.json). The package includes the [NVIDIA CUDA 7.5 license](deployment/licenses/NVIDIA-CUDA-7.5-EULA.txt); Microsoft installers retain their own licenses. Release checksums are in [SHA256SUMS.txt](SHA256SUMS.txt).
+Runtime downloads, checksums, and publishers are listed in [runtime-manifest.json](deployment/runtime-manifest.json). The package includes the [NVIDIA CUDA 7.5 license](deployment/licenses/NVIDIA-CUDA-7.5-EULA.txt); Microsoft installers retain their own licenses. File checksums are in [SHA256SUMS.txt](SHA256SUMS.txt).
 
 The directory diagrams are rendered from [Python source](docs/render_quickstart.py). SVG and PNG exports are in `docs/images`.

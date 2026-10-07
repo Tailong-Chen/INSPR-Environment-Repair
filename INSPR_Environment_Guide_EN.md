@@ -2,7 +2,7 @@
 
 Updated: 2026-10-08. Applies to the **INSPR astigmatism and biplane toolboxes on 64-bit Windows**.
 
-[Download the complete repair ZIP](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip) · [GitHub repository](https://github.com/Tailong-Chen/INSPR-Environment-Repair) · [中文说明](INSPR_Environment_Guide.md)
+[Download the repository](https://github.com/Tailong-Chen/INSPR-Environment-Repair/archive/refs/heads/main.zip) · [GitHub repository](https://github.com/Tailong-Chen/INSPR-Environment-Repair) · [中文说明](INSPR_Environment_Guide.md)
 
 **Run the repair once. Afterwards, open MATLAB normally and run the project's entire `main.m` script.**
 
@@ -12,38 +12,45 @@ You need an existing, complete INSPR astigmatism or biplane project, a working i
 
 The images below are folder-layout illustrations. `C:\SMLM\INSPR-master` is an **example location**, not a required path. Use the folder where your own INSPR project is stored.
 
-## 1. Download the right file
+## 1. Download the repair folder
 
-Download **`INSPR_Environment_Repair.zip`** using the link above or the named asset on the GitHub Releases page.
+Use **Code → Download ZIP** on GitHub or the download link above. Extract the repository archive once and open `INSPR-Environment-Repair-main`.
 
-If you use GitHub's **Code → Download ZIP**, first extract that repository archive, then find `INSPR_Environment_Repair.zip` inside it. Continue with the inner repair ZIP. GitHub's automatically generated **Source code** archives are also repository snapshots, not the ready-to-use repair payload.
+The repository contains the files directly. There is no inner repair ZIP. Before continuing, check that it includes:
+
+```text
+Start-INSPR.cmd
+runtime/win64/cudart64_75.dll
+deployment/installers/vcredist2008_x64.exe
+deployment/installers/vcredist2010_x64.exe
+deployment/installers/vcredist2013_x64.exe
+```
 
 ## 2. Copy the files to your existing INSPR project
 
-1. In Windows File Explorer, extract `INSPR_Environment_Repair.zip` to a temporary folder, such as Downloads.
-2. Open that extracted folder. You should see `Start-INSPR.cmd`, `deployment`, `runtime`, and other files directly inside it.
-3. Select **all its contents** (`Ctrl+A`), then copy them (`Ctrl+C`).
-4. Open your **existing INSPR project root**: the folder that already contains `INSPR for astigmatism-based setup`, `INSPR for biplane setup`, or both.
-5. Paste the copied contents there (`Ctrl+V`). When updating an earlier repair package, merge the folders and replace the repair files with the new copies.
+1. Select **all contents** of `INSPR-Environment-Repair-main`, then copy them.
+2. Open the existing INSPR project root: the folder containing `INSPR for astigmatism-based setup`, `INSPR for biplane setup`, or both.
+3. Paste the contents there. Merge folders and replace older repair files if prompted.
 
-![Copy all repair contents into the existing project root; Start-INSPR.cmd must be beside the INSPR setup folder.](docs/images/extract-to-project.png)
+![Copy the complete repair folder contents beside the existing setup folders.](docs/images/extract-to-project.png)
 
-The key check is that the CMD and the installed setup folder(s) have the **same parent folder**:
+The result should look like this:
 
 ```text
 Your existing INSPR project root
 ├─ INSPR for astigmatism-based setup    ← if installed
 ├─ INSPR for biplane setup              ← if installed
-├─ Start-INSPR.cmd                     ← copied from the repair ZIP
+├─ Start-INSPR.cmd
 ├─ deployment/
+│  └─ installers/                      ← three Microsoft installers
 ├─ runtime/
+│  └─ win64/
+│     └─ cudart64_75.dll
 ├─ docs/
 └─ other repair scripts and guides
 ```
 
-If the launcher is instead inside `INSPR-master\INSPR_Environment_Repair\`, an extra folder layer has been introduced. Move the repair folder's **contents** up into the existing project root. Do not put the repair files inside either setup folder or inside the toolbox subfolder either.
-
-The publicly downloaded repository folder, often named `INSPR-Environment-Repair-main`, is not your existing INSPR application folder.
+Copy the contents, rather than placing the whole `INSPR-Environment-Repair-main` folder inside your project. The CMD and the setup folders need the same parent folder.
 
 ## 3. Run the repair once
 
@@ -95,7 +102,7 @@ To repair/test only one installed toolbox:
 .\Start-INSPR.cmd -Toolbox astigmatism
 ```
 
-To validate all detected toolboxes without opening an interactive GUI, use `-NoLaunch`. Updating from v1.0.x: copy the complete new ZIP into the same root and run the CMD once; recognized old setup blocks are upgraded with backups.
+To validate all detected toolboxes without opening an interactive GUI, use `-NoLaunch`. Updating from v1.0.x: copy the complete new repair folder contents into the same root and run the CMD once; recognized old setup blocks are upgraded with backups.
 
 ## How the repair works
 
@@ -123,7 +130,7 @@ Path configuration is not a guarantee that every old MEX will work with every MA
 
 | What you see | What to check |
 |---|---|
-| A message asking you to extract into the project root | Compare the first illustration with your folders. `Start-INSPR.cmd` must be beside the installed setup folder(s). |
+| Missing `runtime/win64/cudart64_75.dll` | Copy the complete repository contents, including `runtime` and `deployment/installers`, into the existing project root. Older releases kept these files in an inner ZIP; current releases include them directly. |
 | Missing `inspr_prepare_runtime` or private CUDA DLL | Copy the entire package, including `deployment` and `runtime`; run the correct project's whole `main.m`. |
 | MATLAB was not found, or the wrong release starts | Use `-MatlabExe` with the desired installation's full path. |
 | An already-open MATLAB still reports a missing module | Save your results, reopen MATLAB and run the whole `main.m`, or run the diagnostic below in the existing session. |

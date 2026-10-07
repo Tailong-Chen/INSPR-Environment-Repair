@@ -10,7 +10,7 @@ $ProjectRoot = [IO.Path]::GetFullPath($ProjectRoot)
 . (Join-Path $PSScriptRoot 'Get-INSPRToolboxes.ps1')
 $profiles = @(Get-INSPRToolboxes -ProjectRoot $ProjectRoot -Toolbox $Toolbox)
 if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot 'deployment\inspr_prepare_runtime.m'))) {
-    throw 'The startup helper is missing. Extract the ENTIRE repair ZIP first.'
+    throw 'The startup helper is missing. Copy the complete repair folder, including deployment and runtime, first.'
 }
 $pending = @()
 foreach ($profile in $profiles) {

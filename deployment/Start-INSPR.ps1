@@ -25,10 +25,10 @@ function Resolve-PackageFile($Entry) {
         throw 'Package path escapes the project directory.'
     }
     if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
-        throw "Package file is missing: $file. Extract the ENTIRE repair ZIP into the INSPR project folder."
+        throw "Package file is missing: $file. Copy ALL files from the repair repository, including runtime and deployment/installers, into the INSPR project folder."
     }
     if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ne $Entry.sha256) {
-        throw "SHA256 mismatch: $file. Extract a fresh copy of the repair package."
+        throw "SHA256 mismatch: $file. Copy a fresh, complete repair folder from the official repository."
     }
     $signature = Get-AuthenticodeSignature -LiteralPath $file
     if ($signature.Status -ne 'Valid' -or

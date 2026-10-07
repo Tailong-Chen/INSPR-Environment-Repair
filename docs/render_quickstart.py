@@ -74,14 +74,14 @@ d.text(32, 45, 'Copy the repair contents into your INSPR project', 29, bold=True
 d.text(32, 83, 'The project can contain either toolbox or both.', 22, MUTED)
 d.rect(32, 114, 400, 376)
 d.rect(572, 114, 676, 376)
-d.text(54, 150, 'Extracted repair ZIP', 23, bold=True)
+d.text(54, 150, 'Repair repository', 23, bold=True)
 d.text(594, 150, 'Existing INSPR project', 23, bold=True)
 d.line([(32, 174), (432, 174)], width=1)
 d.line([(572, 174), (1248, 174)], width=1)
 for y, label, is_file in [(220, 'Start-INSPR.cmd', True), (272, 'deployment/', False),
                           (324, 'runtime/', False), (376, 'docs/', False)]:
     d.row(56, y, label, is_file, emphasis=is_file)
-d.text(56, 447, '+ the remaining files in the ZIP', 20, MUTED)
+d.text(56, 447, '+ the remaining repository files', 20, MUTED)
 d.text(596, 213, 'INSPR-master/', 23, mono=True, bold=True)
 d.line([(610, 233), (610, 450)], width=1)
 for y, label, is_file in [(260, 'INSPR for astigmatism-based setup/', False),
@@ -94,7 +94,7 @@ d.text(461, 280, 'copy all', 19, MUTED)
 d.line([(455, 310), (549, 310)], BLUE, 2)
 d.line([(537, 301), (549, 310), (537, 319)], BLUE, 2)
 d.text(32, 546, 'Start-INSPR.cmd and the setup folders belong at the same level.', 23, bold=True)
-d.text(32, 586, 'Do not leave the repair files inside an extra INSPR_Environment_Repair folder.', 22, MUTED)
+d.text(32, 586, 'Do not leave the repair files inside an extra INSPR-Environment-Repair-main folder.', 22, MUTED)
 d.text(32, 625, 'INSPR-master is an example project name. Some files are omitted from this diagram.', 20, MUTED)
 d.save('extract-to-project')
 

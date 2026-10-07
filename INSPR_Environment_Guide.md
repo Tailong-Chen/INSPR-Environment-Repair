@@ -7,7 +7,7 @@
 **首次运行修复程序，完成后直接在 MATLAB 中运行项目的 `main.m`。日常使用不需要再次点击 `Start-INSPR.cmd`。**
 
 GitHub 公开仓库：[Tailong-Chen/INSPR-Environment-Repair](https://github.com/Tailong-Chen/INSPR-Environment-Repair)  
-完整修复包：[下载 INSPR_Environment_Repair.zip](https://github.com/Tailong-Chen/INSPR-Environment-Repair/releases/latest/download/INSPR_Environment_Repair.zip)
+下载：[完整仓库文件夹](https://github.com/Tailong-Chen/INSPR-Environment-Repair/archive/refs/heads/main.zip)（GitHub 下载后解压一次，无内层修复 ZIP）
 
 [English illustrated guide](INSPR_Environment_Guide_EN.md)
 
@@ -35,8 +35,8 @@ MEX 文件 listGPUs.mexw64 无效：找不到指定的模块。
 
 电脑应已安装可正常启动、授权可用的 **Windows 64 位 MATLAB**，以及适合本机 NVIDIA 显卡的驱动。修复包不安装 MATLAB、MATLAB 工具箱或显卡驱动。
 
-1. 准备完整的 INSPR 项目，以及 `INSPR_Environment_Repair.zip`。修复 ZIP 是补充包，不包含完整项目和实验数据。
-2. 在资源管理器中先解压 ZIP，打开解压出来的文件夹，按 `Ctrl+A` 选择里面的**全部内容**，复制到已有的 INSPR 项目根目录。所谓根目录，是已经包含 `INSPR for astigmatism-based setup`、`INSPR for biplane setup` 之一或两者的那一层。不要把整个解压文件夹再套进项目里，也不要放到工具箱子目录。
+1. 准备完整的 INSPR 项目。从上面的链接或 GitHub 的 **Code → Download ZIP** 下载修复仓库，解压一次，打开 `INSPR-Environment-Repair-main`。仓库直接提供所需文件，没有内层修复 ZIP，也不包含完整 INSPR 应用或实验数据。
+2. 按 `Ctrl+A` 选择修复文件夹里面的**全部内容**，复制到已有的 INSPR 项目根目录。所谓根目录，是已经包含 `INSPR for astigmatism-based setup`、`INSPR for biplane setup` 之一或两者的那一层。不要把整个解压文件夹再套进项目里，也不要放到工具箱子目录。
 
    ![把修复包全部内容复制到已有项目根目录，CMD 与 INSPR setup 文件夹同级。](docs/images/extract-to-project.png)
 
@@ -50,12 +50,13 @@ MEX 文件 listGPUs.mexw64 无效：找不到指定的模块。
    ├─ setup_inspr_cuda.m
    ├─ INSPR_Environment_Guide.md
    ├─ deployment/
+   │  └─ installers/  ← 三个微软运行库安装器
    └─ runtime/
       └─ win64/
          └─ cudart64_75.dll
    ```
 
-3. 双击 `Start-INSPR.cmd`。若缺少微软运行库，程序会调用附带的官方安装器；出现 Windows 管理员权限提示时，允许安装。
+3. 确认存在 `runtime/win64/cudart64_75.dll` 和 `deployment/installers` 下的三个 `.exe`，然后双击 `Start-INSPR.cmd`。若缺少微软运行库，程序会调用附带的官方安装器；出现 Windows 管理员权限提示时，允许安装。
 4. 等待环境检查和小规模 GPU 定位测试。首次加载 GPU 内核可能需要一些时间。每套已检测到的工具箱都在独立 MATLAB 进程中测试。通过后打开 MATLAB；两套都有时，会弹出选择框让你选择要打开哪一套。缺少另一套工具箱不影响已有工具箱的修复。
 
 控制台出现以下文字表示该次验证通过：
@@ -172,12 +173,12 @@ PATH 可以理解为 Windows 查找 DLL 时使用的目录列表之一。这样�
 |---|---|
 | 每次打开 MATLAB 都要再运行 CMD 吗？ | 不需要。完成新版修复包配置后，每次运行整个 `main.m` 即可。 |
 | 安装后原先打开的 MATLAB 仍报错 | 旧会话不会自动继承启动器的环境。保存结果后重新打开 MATLAB，再运行整个 `main.m`；也可按下文在原会话运行诊断。 |
-| 报 `inspr_prepare_runtime` 无法识别，或私有 CUDA 运行库缺失 | 检查是否完整解压，是否保留 `deployment` 和 `runtime`，以及是否使用了正确项目的 `main.m`。 |
+| 报 `Package file is missing`、`inspr_prepare_runtime` 无法识别，或私有 CUDA 运行库缺失 | 检查是否复制了完整仓库，尤其是 `deployment/installers` 和 `runtime/win64/cudart64_75.dll`，以及是否使用了正确项目的 `main.m`。 |
 | 修复程序没有找到 MATLAB，或选错版本 | 使用上面的 `-MatlabExe` 参数指定实际路径。 |
 | 仍提示“找不到指定的模块” | 查看原始 MEX 错误与日志；还可能涉及其他 DLL、微软运行库或 MATLAB 版本问题。 |
 | GPU 枚举成功，定位仍失败 | 以真实定位测试结果为准。`no kernel image`、`invalid device function` 等错误可能需要重新编译内核，修改 PATH 不能解决。 |
 | 换电脑、升级 MATLAB 或更换显卡 | 在新环境中重新运行一次修复程序进行验证。 |
-| 修复程序提示 SHA-256 或签名校验失败 | 重新取得并完整解压可信来源的修复包，不绕过校验。 |
+| 修复程序提示 SHA-256 或签名校验失败 | 重新取得并复制可信来源的完整修复文件夹，不绕过校验。 |
 
 首次修复日志位于 `deployment/logs`。排查时保留该次运行生成的 `*_launcher.txt`、`*_matlab.txt`、`*_environment.txt` 和 `*_status.txt`，并记录所用 MATLAB 版本和显卡型号。
 

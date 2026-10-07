@@ -1,3 +1,9 @@
+# v1.2.0 distribution change
+
+The repository now contains `runtime/win64/cudart64_75.dll` and all three Microsoft installers as regular files. The nested repair ZIP and its build script were removed. `test_repair_folder.ps1` checks that a distributed folder includes every signed payload and has no inner repair ZIP. The original v1.1.0 GPU results below remain the computational validation baseline.
+
+On 2026-10-08, direct folder copies passed all three layouts (astigmatism only, biplane only, and both) on the same Windows 11 / MATLAB R2024a / RTX 3060 Ti system. Each test started from an unpatched main.m in a path containing spaces and Chinese characters, with no inner ZIP present. All startup and real GPU checks passed. Signed payload validation and corrupt-file rejection also passed.
+
 # v1.1.0 validation
 
 Tested on 2026-10-08 with Windows 11, MATLAB R2024a, NVIDIA RTX 3060 Ti and driver 591.86. The original INSPR MEX binaries were used without recompilation.
@@ -25,10 +31,11 @@ Run PowerShell tests from the project root:
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_install_inspr_startup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_dual_toolbox_install.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_deployment.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_distribution_layouts.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_repair_folder.ps1 -RepairDirectory "C:\Downloads\INSPR-Environment-Repair-main"
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_distribution_layouts.ps1 -RepairDirectory "C:\Downloads\INSPR-Environment-Repair-main" -ApplicationRoot "C:\SMLM\INSPR-master"
 ```
 
-The layout test needs the complete repair ZIP, original application files, a licensed MATLAB and NVIDIA GPU. It copies application/support files into temporary project directories under `deployment/cache`, runs the real launcher with `-NoInstall -NoLaunch`, and preserves logs. Existing Microsoft runtimes are required for `-NoInstall`.
+The current layout test needs the complete repair folder, original application files, a licensed MATLAB and NVIDIA GPU. It copies application/support files into temporary project directories under `deployment/cache`, runs the real launcher with `-NoInstall -NoLaunch`, and preserves logs. Existing Microsoft runtimes are required for `-NoInstall`.
 
 In fresh, isolated MATLAB processes, add the project's `tests` folder and run `test_setup_inspr_cuda` / `test_inspr_startup` for astigmatism, `test_biplane_runtime` for biplane, and `test_inspr_preloaded_mex` for the loaded-MEX conflict check. Do not run both toolbox suites in the same MATLAB process. The legacy localization MEX resets its CUDA context.
 

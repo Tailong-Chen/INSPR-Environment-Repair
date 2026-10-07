@@ -2,11 +2,11 @@
 
 本说明针对散光和 biplane 两套 INSPR 工具箱；单独安装任一套或同时安装均可识别。
 接收方可先阅读 [环境修复使用说明与原理](INSPR_Environment_Guide.md)，其中包含首次安装、日常启动、一次配置的原理、版本兼容性和常见问题。
-优先使用 `INSPR_Environment_Repair.zip`。它包含官方 CUDA 7.5 运行库、微软 x64 运行库安装器和自动启动程序，接收方不需要安装 Python、Visual Studio 或完整 CUDA Toolkit。
+直接使用 GitHub 仓库中的完整文件夹，不再分发内层修复 ZIP。仓库包含官方 CUDA 7.5 运行库、微软 x64 运行库安装器和自动启动程序，接收方不需要安装 Python、Visual Studio 或完整 CUDA Toolkit。
 
 ## 直接给接收方的操作
 
-1. 将修复 ZIP 的**全部内容**解压到已有的 `INSPR-master` 根目录，保证 `Start-INSPR.cmd` 与已安装的 `INSPR for astigmatism-based setup` / `INSPR for biplane setup` 文件夹并列。
+1. 将修复文件夹的**全部内容**复制到已有的 `INSPR-master` 根目录，保证 `Start-INSPR.cmd` 与已安装的 `INSPR for astigmatism-based setup` / `INSPR for biplane setup` 文件夹并列。
 2. **首次**双击 **`Start-INSPR.cmd`**。如果缺少微软运行库，接受 Windows 的管理员权限提示。
 3. 等待自动检测、GUI 启动和小规模 GPU 定位测试完成，程序会打开 MATLAB 和 INSPR 界面。
 4. **以后正常打开 MATLAB，运行对应工具箱的 `main.m`（biplane 为 `INSPR for biplane setup/INSPR toolbox/main.m`）即可，无需再点击 CMD，也无需每次手动配置路径。**
@@ -35,7 +35,7 @@
 
 **当前实测：**Windows 11、MATLAB R2024a、RTX 3060 Ti、驱动 591.86，原先缺少 CUDA 7.5 DLL；加入私有运行库后，完整启动器验证返回 `INSPR_RUNTIME_OK`，真实 GPU 定位 MEX 的合成数据测试通过。2080 Ti 尚未现场测试，启动器会在接收方机器上自行验证。显卡枚举成功与实验结果准确性是不同的验证层次；合成测试不替代真实数据的科学验证。
 
-启动包中的核心文件为 `Start-INSPR.cmd`、`deployment/Start-INSPR.ps1`、`deployment/Install-INSPRStartup.ps1`、`deployment/inspr_prepare_runtime.m`、`deployment/inspr_gpu_smoketest.m`、`deployment/runtime-manifest.json` 及 `runtime/win64/cudart64_75.dll`。官方来源和原始 SHA-256 已记录在 manifest；NVIDIA 原版许可位于 `deployment/licenses`，Microsoft 原版安装器保留自身许可信息。打包时不包含实验数据、原始 MEX、旧 CUDA 全量安装器或 7-Zip，也不分发整份 `main.m` 覆盖接收方的修改。
+启动包中的核心文件为 `Start-INSPR.cmd`、`deployment/Start-INSPR.ps1`、`deployment/Install-INSPRStartup.ps1`、`deployment/inspr_prepare_runtime.m`、`deployment/inspr_gpu_smoketest.m`、`deployment/runtime-manifest.json` 及 `runtime/win64/cudart64_75.dll`。官方来源和原始 SHA-256 已记录在 manifest；NVIDIA 原版许可位于 `deployment/licenses`，Microsoft 原版安装器保留自身许可信息。分发目录不包含实验数据、原始 MEX、旧 CUDA 全量安装器或 7-Zip，也不分发整份 `main.m` 覆盖接收方的修改。
 
 ## 可选：在已经打开的 MATLAB 中检查
 
@@ -53,7 +53,7 @@ report = setup_inspr_cuda('Toolbox', 'biplane'); % 或 astigmatism
 report = setup_inspr_cuda('Toolbox', 'biplane', 'RuntimeDirectory', 'D:\CUDA\v7.5\bin');
 ```
 
-修复 ZIP 已附带**从官方软件包提取并校验签名**的 `runtime\win64\cudart64_75.dll`。诊断函数本身不下载安装运行库。不要把新版 DLL 重命名成旧版文件名。
+仓库中的 `runtime/win64` 已直接提供**从官方软件包提取并校验签名**的 `runtime\win64\cudart64_75.dll`。诊断函数本身不下载安装运行库。不要把新版 DLL 重命名成旧版文件名。
 
 配置后在同一个 MATLAB 会话中启动：
 
@@ -143,4 +143,4 @@ test_setup_inspr_cuda
 
 biplane 自检使用原生产调用的 22 输入、5 输出、双 16×16 通道和 7 参数布局，包括非零配准平移和分割偏移；实际调用两个通道拟合并检查数值输出。自检不会处理实验数据，也不认证实验精度。
 
-开发验证还包括 `tests/test_dual_toolbox_install.ps1`（单 biplane、双入口、v1 升级、备份和重复运行）、`tests/test_biplane_runtime.m`（在独立 MATLAB 中执行），以及 `tests/test_distribution_layouts.ps1`（从真实 ZIP 解压测试三种安装布局，需要 GPU）。
+开发验证还包括 `tests/test_dual_toolbox_install.ps1`（单 biplane、双入口、v1 升级、备份和重复运行）、`tests/test_biplane_runtime.m`（在独立 MATLAB 中执行），以及 `tests/test_distribution_layouts.ps1`（从完整分发文件夹复制测试三种安装布局，需要 GPU）。

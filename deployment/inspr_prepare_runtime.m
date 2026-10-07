@@ -14,7 +14,7 @@ end
 runtime = fullfile(projectRoot, 'runtime', 'win64');
 if exist(fullfile(runtime, 'cudart64_75.dll'), 'file') ~= 2
     warning('INSPR:Runtime:Missing', ...
-        'Private CUDA runtime is missing. Extract the full repair ZIP and run Start-INSPR.cmd once.');
+        'Private CUDA runtime is missing. Copy the complete repair folder, including runtime, and run Start-INSPR.cmd once.');
     return;
 end
 entries = regexp(getenv('PATH'), ';', 'split');

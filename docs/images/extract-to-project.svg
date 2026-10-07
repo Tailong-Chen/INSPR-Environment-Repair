@@ -5,7 +5,7 @@
 <text x="32" y="83" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">The project can contain either toolbox or both.</text>
 <rect x="32" y="114" width="400" height="376" fill="white" stroke="#d0d7de"/>
 <rect x="572" y="114" width="676" height="376" fill="white" stroke="#d0d7de"/>
-<text x="54" y="150" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Extracted repair ZIP</text>
+<text x="54" y="150" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Repair repository</text>
 <text x="594" y="150" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Existing INSPR project</text>
 <polyline points="32,174 432,174" fill="none" stroke="#d0d7de" stroke-width="1"/>
 <polyline points="572,174 1248,174" fill="none" stroke="#d0d7de" stroke-width="1"/>
@@ -18,7 +18,7 @@
 <text x="96" y="324" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="400" fill="#24292f">runtime/</text>
 <polyline points="56,375 56,356 65,356 69,360 83,360 83,375 56,375" fill="none" stroke="#57606a" stroke-width="2"/>
 <text x="96" y="376" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="400" fill="#24292f">docs/</text>
-<text x="56" y="447" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#57606a">+ the remaining files in the ZIP</text>
+<text x="56" y="447" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#57606a">+ the remaining repository files</text>
 <text x="596" y="213" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="700" fill="#24292f">INSPR-master/</text>
 <polyline points="610,233 610,450" fill="none" stroke="#d0d7de" stroke-width="1"/>
 <polyline points="610,250 632,250" fill="none" stroke="#d0d7de" stroke-width="1"/>
@@ -41,6 +41,6 @@
 <polyline points="455,310 549,310" fill="none" stroke="#0969da" stroke-width="2"/>
 <polyline points="537,301 549,310 537,319" fill="none" stroke="#0969da" stroke-width="2"/>
 <text x="32" y="546" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Start-INSPR.cmd and the setup folders belong at the same level.</text>
-<text x="32" y="586" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">Do not leave the repair files inside an extra INSPR_Environment_Repair folder.</text>
+<text x="32" y="586" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">Do not leave the repair files inside an extra INSPR-Environment-Repair-main folder.</text>
 <text x="32" y="625" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#57606a">INSPR-master is an example project name. Some files are omitted from this diagram.</text>
 </svg>

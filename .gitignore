@@ -3,9 +3,15 @@
 /deployment/staging/
 /deployment/backups/
 /deployment/publication/
-/deployment/installers/
-/runtime/win64/*.dll
+/deployment/installers/*
+!/deployment/installers/vcredist2008_x64.exe
+!/deployment/installers/vcredist2010_x64.exe
+!/deployment/installers/vcredist2013_x64.exe
+/runtime/win64/*
+!/runtime/win64/cudart64_75.dll
 /tests/local_cuda_report.txt
 /INSPR for astigmatism-based setup/
 
 /INSPR for biplane setup/
+
+/INSPR_Environment_Repair.zip
