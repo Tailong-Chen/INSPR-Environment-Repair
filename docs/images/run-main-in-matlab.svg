@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="636" viewBox="0 0 1280 636" role="img" aria-labelledby="title desc">
+<title id="title">INSPR toolbox entry points</title><desc id="desc">Astigmatism: INSPR for astigmatism-based setup / INSPR astigmatism toolbox / main.m. Biplane: INSPR for biplane setup / INSPR toolbox / main.m. Run each toolbox in a separate MATLAB process.</desc>
+<rect width="1280" height="636" fill="white"/>
+<text x="32" y="45" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#24292f">Open the main.m for your toolbox</text>
+<text x="32" y="83" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">In MATLAB, run the entire script.</text>
+<rect x="32" y="115" width="780" height="444" fill="white" stroke="#d0d7de"/>
+<polyline points="58,162 58,143 67,143 71,147 85,147 85,162 58,162" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="98" y="163" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="24" font-weight="400" fill="#24292f">INSPR-master/</text>
+<polyline points="71,181 71,397 106,397" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="71,219 106,219" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="112,229 112,210 121,210 125,214 139,214 139,229 112,229" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="152" y="230" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="400" fill="#24292f">INSPR for astigmatism-based setup/</text>
+<polyline points="125,244 125,283 160,283" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="166,293 166,274 175,274 179,278 193,278 193,293 166,293" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="206" y="294" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="400" fill="#24292f">INSPR astigmatism toolbox/</text>
+<polyline points="179,308 179,347 214,347" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="223,358 223,337 238,337 244,343 244,358 223,358" fill="none" stroke="#0969da" stroke-width="2"/>
+<polyline points="238,337 238,343 244,343" fill="none" stroke="#0969da" stroke-width="2"/>
+<text x="260" y="358" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="24" font-weight="700" fill="#0969da">main.m</text>
+<polyline points="112,407 112,388 121,388 125,392 139,392 139,407 112,407" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="152" y="408" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="400" fill="#24292f">INSPR for biplane setup/</text>
+<polyline points="125,422 125,461 160,461" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="166,471 166,452 175,452 179,456 193,456 193,471 166,471" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="206" y="472" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="400" fill="#24292f">INSPR toolbox/</text>
+<polyline points="179,486 179,525 214,525" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="223,536 223,515 238,515 244,521 244,536 223,536" fill="none" stroke="#0969da" stroke-width="2"/>
+<polyline points="238,515 238,521 244,521" fill="none" stroke="#0969da" stroke-width="2"/>
+<text x="260" y="536" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="24" font-weight="700" fill="#0969da">main.m</text>
+<text x="857" y="211" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">After the one-time repair</text>
+<text x="857" y="262" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" fill="#24292f">Open MATLAB.</text>
+<text x="857" y="308" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" fill="#24292f">Open the chosen main.m.</text>
+<text x="857" y="354" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" fill="#24292f">Click Run.</text>
+<polyline points="857,389 1238,389" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<text x="857" y="436" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">Keep deployment/ and</text>
+<text x="857" y="469" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">runtime/ in the project.</text>
+<text x="32" y="609" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Use a separate MATLAB process for each toolbox.</text>
+</svg>

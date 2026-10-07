@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" viewBox="0 0 1280 650" role="img" aria-labelledby="title desc">
+<title id="title">Where to put the repair files</title><desc id="desc">Copy every extracted repair file into the existing INSPR project root. The CMD must be beside the installed astigmatism or biplane setup folders.</desc>
+<rect width="1280" height="650" fill="white"/>
+<text x="32" y="45" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#24292f">Copy the repair contents into your INSPR project</text>
+<text x="32" y="83" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">The project can contain either toolbox or both.</text>
+<rect x="32" y="114" width="400" height="376" fill="white" stroke="#d0d7de"/>
+<rect x="572" y="114" width="676" height="376" fill="white" stroke="#d0d7de"/>
+<text x="54" y="150" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Extracted repair ZIP</text>
+<text x="594" y="150" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Existing INSPR project</text>
+<polyline points="32,174 432,174" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="572,174 1248,174" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="59,220 59,199 74,199 80,205 80,220 59,220" fill="none" stroke="#0969da" stroke-width="2"/>
+<polyline points="74,199 74,205 80,205" fill="none" stroke="#0969da" stroke-width="2"/>
+<text x="96" y="220" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="700" fill="#0969da">Start-INSPR.cmd</text>
+<polyline points="56,271 56,252 65,252 69,256 83,256 83,271 56,271" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="96" y="272" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="400" fill="#24292f">deployment/</text>
+<polyline points="56,323 56,304 65,304 69,308 83,308 83,323 56,323" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="96" y="324" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="400" fill="#24292f">runtime/</text>
+<polyline points="56,375 56,356 65,356 69,360 83,360 83,375 56,375" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="96" y="376" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="22" font-weight="400" fill="#24292f">docs/</text>
+<text x="56" y="447" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#57606a">+ the remaining files in the ZIP</text>
+<text x="596" y="213" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="23" font-weight="700" fill="#24292f">INSPR-master/</text>
+<polyline points="610,233 610,450" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="610,250 632,250" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="638,259 638,240 647,240 651,244 665,244 665,259 638,259" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="678" y="260" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="21" font-weight="400" fill="#24292f">INSPR for astigmatism-based setup/</text>
+<polyline points="610,300 632,300" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="638,309 638,290 647,290 651,294 665,294 665,309 638,309" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="678" y="310" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="21" font-weight="400" fill="#24292f">INSPR for biplane setup/</text>
+<polyline points="610,350 632,350" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="641,360 641,339 656,339 662,345 662,360 641,360" fill="none" stroke="#0969da" stroke-width="2"/>
+<polyline points="656,339 656,345 662,345" fill="none" stroke="#0969da" stroke-width="2"/>
+<text x="678" y="360" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="21" font-weight="700" fill="#0969da">Start-INSPR.cmd</text>
+<polyline points="610,400 632,400" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="638,409 638,390 647,390 651,394 665,394 665,409 638,409" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="678" y="410" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="21" font-weight="400" fill="#24292f">deployment/</text>
+<polyline points="610,450 632,450" fill="none" stroke="#d0d7de" stroke-width="1"/>
+<polyline points="638,459 638,440 647,440 651,444 665,444 665,459 638,459" fill="none" stroke="#57606a" stroke-width="2"/>
+<text x="678" y="460" font-family="Consolas, DejaVu Sans Mono, monospace" font-size="21" font-weight="400" fill="#24292f">runtime/</text>
+<text x="461" y="280" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#57606a">copy all</text>
+<polyline points="455,310 549,310" fill="none" stroke="#0969da" stroke-width="2"/>
+<polyline points="537,301 549,310 537,319" fill="none" stroke="#0969da" stroke-width="2"/>
+<text x="32" y="546" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#24292f">Start-INSPR.cmd and the setup folders belong at the same level.</text>
+<text x="32" y="586" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#57606a">Do not leave the repair files inside an extra INSPR_Environment_Repair folder.</text>
+<text x="32" y="625" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#57606a">INSPR-master is an example project name. Some files are omitted from this diagram.</text>
+</svg>

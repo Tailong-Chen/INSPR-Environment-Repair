@@ -7,7 +7,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime package validation failed.' }
 $files = @(
     'Start-INSPR.cmd', 'setup_inspr_cuda.m', 'CUDA_SETUP.md', 'INSPR_Environment_Guide.md',
     'INSPR_Environment_Guide_EN.md', 'docs\images\extract-to-project.png',
-    'docs\images\run-main-in-matlab.png',
+    'docs\images\run-main-in-matlab.png', 'docs\images\extract-to-project.svg',
+    'docs\images\run-main-in-matlab.svg',
     'deployment\Start-INSPR.ps1', 'deployment\Get-INSPRToolboxes.ps1',
     'deployment\inspr_toolbox_profile.m', 'deployment\inspr_configure_paths.m',
     'deployment\inspr_biplane_smoketest.m', 'deployment\runtime-manifest.json',

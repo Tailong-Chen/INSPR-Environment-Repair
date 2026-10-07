@@ -1,118 +1,128 @@
-"""Render the documentation's folder-layout illustrations (not screenshots)."""
+"""Draw the documented directory layouts as SVG and PNG from the same geometry.
+
+Requires Pillow for the PNG export. No application screenshots or image models
+are used. Run from any directory: python docs/render_quickstart.py
+"""
+from html import escape
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).resolve().parent / 'images'
 OUT.mkdir(parents=True, exist_ok=True)
-INK = '#172B4D'
-MUTED = '#52647C'
-BLUE = '#155EEF'
-GREEN = '#087443'
-LINE = '#D5DEE9'
+INK, MUTED, BORDER, BLUE = '#24292f', '#57606a', '#d0d7de', '#0969da'
 
 
-def font(size, bold=False, mono=False):
-    name = 'consola.ttf' if mono else ('arialbd.ttf' if bold else 'arial.ttf')
-    path = Path('C:/Windows/Fonts') / name
-    if path.exists():
-        return ImageFont.truetype(str(path), size)
-    return ImageFont.truetype('DejaVuSansMono.ttf' if mono else
-                              ('DejaVuSans-Bold.ttf' if bold else 'DejaVuSans.ttf'), size)
+def font(size, mono=False, bold=False):
+    name = ('consolab.ttf' if bold else 'consola.ttf') if mono else ('arialbd.ttf' if bold else 'arial.ttf')
+    candidate = Path('C:/Windows/Fonts') / name
+    if candidate.exists():
+        return ImageFont.truetype(str(candidate), size)
+    family = 'DejaVuSansMono' if mono else 'DejaVuSans'
+    return ImageFont.truetype(family + ('-Bold' if bold else '') + '.ttf', size)
 
 
-def canvas(height):
-    im = Image.new('RGB', (1400, height), '#F5F7FB')
-    return im, ImageDraw.Draw(im)
+class Drawing:
+    def __init__(self, width, height, title, description):
+        self.width, self.height = width, height
+        self.im = Image.new('RGB', (width, height), 'white')
+        self.draw = ImageDraw.Draw(self.im)
+        self.parts = [
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+            f'<title id="title">{escape(title)}</title><desc id="desc">{escape(description)}</desc>',
+            f'<rect width="{width}" height="{height}" fill="white"/>',
+        ]
+
+    def rect(self, x, y, w, h, fill='white', stroke=BORDER):
+        self.parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}"/>')
+        self.draw.rectangle((x, y, x+w, y+h), fill=fill, outline=stroke)
+
+    def line(self, points, color=BORDER, width=2):
+        coords = ' '.join(f'{x},{y}' for x, y in points)
+        self.parts.append(f'<polyline points="{coords}" fill="none" stroke="{color}" stroke-width="{width}"/>')
+        self.draw.line(points, fill=color, width=width)
+
+    def text(self, x, y, value, size=23, color=INK, mono=False, bold=False):
+        f = font(size, mono, bold)
+        bounds = self.draw.textbbox((x, y), value, font=f, anchor='ls')
+        assert bounds[0] >= 0 and bounds[2] <= self.width and bounds[3] <= self.height, (value, bounds)
+        family = 'Consolas, DejaVu Sans Mono, monospace' if mono else 'Arial, Helvetica, sans-serif'
+        weight = '700' if bold else '400'
+        self.parts.append(f'<text x="{x}" y="{y}" font-family="{family}" font-size="{size}" font-weight="{weight}" fill="{color}">{escape(value)}</text>')
+        self.draw.text((x, y), value, font=f, fill=color, anchor='ls')
+
+    def folder(self, x, y):
+        self.line([(x, y+22), (x, y+3), (x+9, y+3), (x+13, y+7), (x+27, y+7), (x+27, y+22), (x, y+22)], MUTED, 2)
+
+    def file(self, x, y, color=BLUE):
+        self.line([(x+3, y+23), (x+3, y+2), (x+18, y+2), (x+24, y+8), (x+24, y+23), (x+3, y+23)], color, 2)
+        self.line([(x+18, y+2), (x+18, y+8), (x+24, y+8)], color, 2)
+
+    def row(self, x, y, label, is_file=False, emphasis=False, size=22):
+        (self.file if is_file else self.folder)(x, y-23)
+        self.text(x+40, y, label, size, BLUE if emphasis else INK, mono=True, bold=emphasis)
+
+    def save(self, name):
+        self.parts.append('</svg>')
+        (OUT / f'{name}.svg').write_text('\n'.join(self.parts)+'\n', encoding='utf-8')
+        self.im.save(OUT / f'{name}.png', optimize=True)
 
 
-def text(d, x, y, value, size=28, color=INK, bold=False, mono=False):
-    d.text((x, y), value, font=font(size, bold, mono), fill=color, spacing=10)
+# The uppermost application directory is the destination, regardless of drive.
+d = Drawing(1280, 650, 'Where to put the repair files',
+            'Copy every extracted repair file into the existing INSPR project root. The CMD must be beside the installed astigmatism or biplane setup folders.')
+d.text(32, 45, 'Copy the repair contents into your INSPR project', 29, bold=True)
+d.text(32, 83, 'The project can contain either toolbox or both.', 22, MUTED)
+d.rect(32, 114, 400, 376)
+d.rect(572, 114, 676, 376)
+d.text(54, 150, 'Extracted repair ZIP', 23, bold=True)
+d.text(594, 150, 'Existing INSPR project', 23, bold=True)
+d.line([(32, 174), (432, 174)], width=1)
+d.line([(572, 174), (1248, 174)], width=1)
+for y, label, is_file in [(220, 'Start-INSPR.cmd', True), (272, 'deployment/', False),
+                          (324, 'runtime/', False), (376, 'docs/', False)]:
+    d.row(56, y, label, is_file, emphasis=is_file)
+d.text(56, 447, '+ the remaining files in the ZIP', 20, MUTED)
+d.text(596, 213, 'INSPR-master/', 23, mono=True, bold=True)
+d.line([(610, 233), (610, 450)], width=1)
+for y, label, is_file in [(260, 'INSPR for astigmatism-based setup/', False),
+                          (310, 'INSPR for biplane setup/', False),
+                          (360, 'Start-INSPR.cmd', True),
+                          (410, 'deployment/', False), (460, 'runtime/', False)]:
+    d.line([(610, y-10), (632, y-10)], width=1)
+    d.row(638, y, label, is_file, emphasis=is_file, size=21)
+d.text(461, 280, 'copy all', 19, MUTED)
+d.line([(455, 310), (549, 310)], BLUE, 2)
+d.line([(537, 301), (549, 310), (537, 319)], BLUE, 2)
+d.text(32, 546, 'Start-INSPR.cmd and the setup folders belong at the same level.', 23, bold=True)
+d.text(32, 586, 'Do not leave the repair files inside an extra INSPR_Environment_Repair folder.', 22, MUTED)
+d.text(32, 625, 'INSPR-master is an example project name. Some files are omitted from this diagram.', 20, MUTED)
+d.save('extract-to-project')
 
-
-def box(d, bounds, fill='white', outline=LINE, radius=16):
-    d.rounded_rectangle(bounds, radius=radius, fill=fill, outline=outline, width=2)
-
-
-def folder(d, x, y):
-    d.rounded_rectangle((x, y+3, x+20, y+14), radius=3, fill='#F4C25F')
-    d.rounded_rectangle((x, y+10, x+34, y+33), radius=3, fill='#EAAF34')
-
-
-def file_icon(d, x, y, color=BLUE):
-    d.rounded_rectangle((x+3, y+1, x+27, y+32), radius=3, fill='white', outline=color, width=2)
-    d.line((x+9, y+13, x+21, y+13), fill=color, width=2)
-    d.line((x+9, y+20, x+21, y+20), fill=color, width=2)
-
-
-def header(d, number, label, title, subtitle):
-    box(d, (64, 42, 116, 94), fill=BLUE, outline=BLUE, radius=12)
-    text(d, 82, 49, str(number), 30, 'white', True)
-    text(d, 135, 53, label, 25, BLUE, True)
-    text(d, 64, 116, title, 43, bold=True)
-    text(d, 64, 181, subtitle, 25, MUTED)
-
-
-
-im, d = canvas(1140)
-header(d, 1, 'FIRST-TIME SETUP', 'Copy the repair files into your existing INSPR project',
-       'Folder layout illustration. Your drive and project location may differ from this example.')
-box(d, (64, 244, 540, 738))
-text(d, 90, 270, 'Downloaded repair ZIP', 29, bold=True)
-text(d, 90, 322, 'INSPR_Environment_Repair.zip', 22, mono=True)
-d.line((90, 367, 514, 367), fill=LINE, width=2)
-for y, label, is_folder in [(397, 'Start-INSPR.cmd', False), (455, 'deployment', True),
-                           (513, 'runtime', True), (571, 'docs', True)]:
-    (folder if is_folder else file_icon)(d, 96, y)
-    text(d, 144, y+2, label, 25, mono=True)
-text(d, 90, 652, 'Extract, then copy ALL contents.', 23, BLUE, True)
-text(d, 90, 690, 'Key items shown above.', 20, MUTED)
-d.line((557, 505, 624, 505), fill=BLUE, width=5)
-d.polygon([(624, 494), (644, 505), (624, 516)], fill=BLUE)
-text(d, 559, 462, 'Copy', 22, BLUE, True)
-box(d, (658, 244, 1336, 846))
-text(d, 684, 270, 'Your existing INSPR project', 29, bold=True)
-text(d, 684, 323, r'C:\SMLM\INSPR-master', 27, BLUE, mono=True)
-for y, label in [(379,'INSPR for astigmatism-based setup'),(431,'INSPR for biplane setup')]:
-    folder(d,700,y)
-    text(d,748,y+3,label,23,mono=True)
-text(d,700,486,'Either setup folder, or both, may be present.',23,MUTED)
-box(d, (683, 531, 1312, 587), fill='#E9F7EF', outline='#B7DCC8', radius=8)
-file_icon(d,700,543,GREEN)
-text(d,748,546,'Start-INSPR.cmd',26,GREEN,True,True)
-text(d,1165,550,'RUN ONCE',20,GREEN,True)
-for y, label, is_folder in [(613,'deployment',True),(665,'runtime',True),(717,'setup_inspr_cuda.m',False),(769,'docs',True)]:
-    (folder if is_folder else file_icon)(d,700,y)
-    text(d,748,y+3,label,24,mono=True)
-box(d,(64,882,1336,1041),fill='#FFF3F0',outline='#F0C6BD')
-text(d,90,903,'Avoid an extra folder layer',29,'#A32917',True)
-text(d,90,950,r'INSPR-master\INSPR_Environment_Repair\Start-INSPR.cmd',27,'#A32917',mono=True)
-text(d,90,996,'Move the repair contents up so the CMD and setup folders are at the same level.',25,MUTED)
-text(d,64,1077,'Double-click the CMD once. Both toolboxes present? Both are repaired and tested.',26)
-im.save(OUT/'extract-to-project.png',optimize=True)
-
-im, d = canvas(1110)
-header(d,2,'EVERYDAY USE','Run the main.m for the toolbox you want to use',
-       'After the one-time repair: open MATLAB normally. Use a separate MATLAB process per toolbox.')
-for top,title,setup,toolbox in [
-    (244,'ASTIGMATISM','INSPR for astigmatism-based setup','INSPR astigmatism toolbox'),
-    (536,'BIPLANE','INSPR for biplane setup','INSPR toolbox')]:
-    box(d,(64,top,1336,top+252))
-    text(d,90,top+22,title,26,BLUE,True)
-    text(d,90,top+74,'Your existing project root',25,MUTED)
-    folder(d,124,top+120)
-    text(d,170,top+123,setup,26,mono=True)
-    folder(d,164,top+178)
-    text(d,210,top+181,toolbox,26,mono=True)
-    box(d,(905,top+165,1306,top+227),fill='#E9F7EF',outline='#B7DCC8',radius=8)
-    file_icon(d,928,top+180,GREEN)
-    text(d,972,top+179,'main.m',31,GREEN,True,True)
-    d.line((798,top+196,872,top+196),fill=GREEN,width=4)
-    d.polygon([(872,top+186),(894,top+196),(872,top+206)],fill=GREEN)
-box(d,(64,828,1336,1042),fill='#E9F7EF',outline='#B7DCC8')
-text(d,90,850,'In MATLAB: open the chosen main.m and click Run.',32,GREEN,True)
-text(d,90,905,'Or set Current Folder to its toolbox folder and type:  main',28)
-text(d,90,957,'Run the whole script. It sets both the toolbox paths and the private DLL path.',26)
-text(d,90,1002,'Keep deployment and runtime with the project. No need to rerun the CMD each time.',25)
-text(d,64,1064,'Folder illustrations, not screenshots. Do not add both toolbox trees to one MATLAB session.',23,MUTED)
-im.save(OUT/'run-main-in-matlab.png',optimize=True)
-print('Rendered both toolbox paths to',OUT)
+# Indentation and continuous branch lines show complete relative entry paths.
+d = Drawing(1280, 636, 'INSPR toolbox entry points',
+            'Astigmatism: INSPR for astigmatism-based setup / INSPR astigmatism toolbox / main.m. Biplane: INSPR for biplane setup / INSPR toolbox / main.m. Run each toolbox in a separate MATLAB process.')
+d.text(32, 45, 'Open the main.m for your toolbox', 29, bold=True)
+d.text(32, 83, 'In MATLAB, run the entire script.', 22, MUTED)
+d.rect(32, 115, 780, 444)
+d.row(58, 163, 'INSPR-master/', size=24)
+d.line([(71, 181), (71, 397), (106, 397)], width=1)
+d.line([(71, 219), (106, 219)], width=1)
+d.row(112, 230, 'INSPR for astigmatism-based setup/', size=23)
+d.line([(125, 244), (125, 283), (160, 283)], width=1)
+d.row(166, 294, 'INSPR astigmatism toolbox/', size=23)
+d.line([(179, 308), (179, 347), (214, 347)], width=1)
+d.row(220, 358, 'main.m', True, True, 24)
+d.row(112, 408, 'INSPR for biplane setup/', size=23)
+d.line([(125, 422), (125, 461), (160, 461)], width=1)
+d.row(166, 472, 'INSPR toolbox/', size=23)
+d.line([(179, 486), (179, 525), (214, 525)], width=1)
+d.row(220, 536, 'main.m', True, True, 24)
+d.text(857, 211, 'After the one-time repair', 23, bold=True)
+for y, label in [(262, 'Open MATLAB.'), (308, 'Open the chosen main.m.'), (354, 'Click Run.')]:
+    d.text(857, y, label, 23)
+d.line([(857, 389), (1238, 389)], width=1)
+d.text(857, 436, 'Keep deployment/ and', 22, MUTED)
+d.text(857, 469, 'runtime/ in the project.', 22, MUTED)
+d.text(32, 609, 'Use a separate MATLAB process for each toolbox.', 23, bold=True)
+d.save('run-main-in-matlab')
+print('Rendered SVG and PNG directory diagrams:', OUT)
