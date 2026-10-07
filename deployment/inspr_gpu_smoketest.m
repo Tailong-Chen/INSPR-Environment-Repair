@@ -1,7 +1,21 @@
-function result = inspr_gpu_smoketest
+function result = inspr_gpu_smoketest(toolbox)
 % Run the real bundled MEX with a small, deterministic synthetic input.
 % Environment sanity check only: this does not validate experimental results.
 % Run in a separate MATLAB process: the legacy MEX calls cudaDeviceReset.
+if nargin < 1, toolbox = 'astigmatism'; end
+root = fileparts(fileparts(mfilename('fullpath')));
+profile = inspr_toolbox_profile(root,toolbox);
+inspr_prepare_runtime(root,profile.id);
+names = {'listGPUs','cMakeSubregions','cHistRecon','cHistRecon3D',profile.localizationMex,'genpsfstruct'};
+expected = {fullfile(profile.helpers,'listGPUs.mexw64'), ...
+    fullfile(profile.directory,'Segmentation','cMakeSubregions.mexw64'), ...
+    fullfile(profile.helpers,'cHistRecon.mexw64'),fullfile(profile.helpers,'cHistRecon3D.mexw64'), ...
+    fullfile(profile.directory,'3D_localization',[profile.localizationMex '.mexw64']), ...
+    fullfile(profile.directory,'3D_localization','genpsfstruct.m')};
+for k = 1:numel(names)
+    assert(strcmpi(which(names{k}),expected{k}),'INSPR:Runtime:Shadowed', ...
+        'Wrong or missing %s. Expected: %s. Start a fresh MATLAB process.',names{k},expected{k});
+end
 listGPUs;
 
 % Exercise the VC++ 2008 segmentation dependency using the production API.
@@ -17,6 +31,10 @@ hist3 = cHistRecon3D(8, 8, 8, single([2;3]), single([2;3]), single([2;3]), 0);
 assert(numel(hist2) == 64 && numel(hist3) == 512);
 assert(all(isfinite(hist2(:))) && all(isfinite(hist3(:))));
 assert(sum(hist2(:)) > 0 && sum(hist3(:)) > 0);
+if strcmp(profile.id,'biplane')
+    result = inspr_biplane_smoketest;
+    return;
+end
 
 % Same input layout as loc_ast_model: 16x16 fit, four subpixels per pixel,
 % 20 inputs and five outputs, single data/derivatives, double scalar options.
@@ -45,7 +63,7 @@ initial = single([8.05;7.95;0.10;2900;5.2]);
 assert(numel(parameters)==5 && numel(convergence)==5 && numel(crlb)==5 ...
     && numel(fitError)==2 && numel(psf)==256, 'INSPR:Runtime:Dimensions', ...
     'GPU MEX returned unexpected dimensions.');
-values = [parameters(:); crlb(:); fitError(:); psf(:)];
+values = [parameters(:); convergence(:); crlb(:); fitError(:); psf(:)];
 assert(all(isfinite(values)) && all(crlb>=0) && all(psf>=0), ...
     'INSPR:Runtime:Numerics', 'GPU MEX returned non-finite or invalid outputs.');
 % Broad, independent sanity bounds catch non-running/broken kernels without
@@ -57,6 +75,7 @@ assert(all(abs(double(parameters(1:2))-truth(1:2)) < 0.25) ...
 result.parameters = double(parameters(:));
 result.truth = truth;
 result.passed = true;
+result.toolbox = 'astigmatism';
 fprintf('INSPR_GPU_SMOKE_OK: x=%.4f y=%.4f z=%.4f photons=%.2f bg=%.3f\n', parameters);
 clear cuda_ast_model;
 end

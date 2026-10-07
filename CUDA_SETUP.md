@@ -1,23 +1,23 @@
 # INSPR 在 Windows 上的一次性环境修复
 
-本说明针对 `INSPR for astigmatism-based setup` 中的散光定位工具箱。
+本说明针对散光和 biplane 两套 INSPR 工具箱；单独安装任一套或同时安装均可识别。
 接收方可先阅读 [环境修复使用说明与原理](INSPR_Environment_Guide.md)，其中包含首次安装、日常启动、一次配置的原理、版本兼容性和常见问题。
 优先使用 `INSPR_Environment_Repair.zip`。它包含官方 CUDA 7.5 运行库、微软 x64 运行库安装器和自动启动程序，接收方不需要安装 Python、Visual Studio 或完整 CUDA Toolkit。
 
 ## 直接给接收方的操作
 
-1. 将修复 ZIP 的**全部内容**解压到已有的 `INSPR-master` 根目录，保证 `Start-INSPR.cmd` 与 `INSPR for astigmatism-based setup` 文件夹并列。
+1. 将修复 ZIP 的**全部内容**解压到已有的 `INSPR-master` 根目录，保证 `Start-INSPR.cmd` 与已安装的 `INSPR for astigmatism-based setup` / `INSPR for biplane setup` 文件夹并列。
 2. **首次**双击 **`Start-INSPR.cmd`**。如果缺少微软运行库，接受 Windows 的管理员权限提示。
 3. 等待自动检测、GUI 启动和小规模 GPU 定位测试完成，程序会打开 MATLAB 和 INSPR 界面。
-4. **以后正常打开 MATLAB，运行 `INSPR for astigmatism-based setup/INSPR astigmatism toolbox/main.m` 即可，无需再点击 CMD，也无需每次手动配置路径。**
+4. **以后正常打开 MATLAB，运行对应工具箱的 `main.m`（biplane 为 `INSPR for biplane setup/INSPR toolbox/main.m`）即可，无需再点击 CMD，也无需每次手动配置路径。**
 
 启动器会校验所有 DLL/安装器的 SHA-256 和 NVIDIA/Microsoft 数字签名，使用项目私有 CUDA DLL，按需安装缺少的 VC++ 2008/2010/2013 x64 运行库。随后给已有的 `main.m` 添加自动配置入口，原文件按字节备份到 `deployment/backups`，重复运行不会重复插入。修改后的入口根据项目位置找到 DLL，不写死 MATLAB 安装目录，移动整个项目文件夹后也仍能定位运行库。
 
-首次修复在独立 MATLAB 进程中先移除从启动器继承的私有 DLL 路径，再通过 `main.m` 打开隐藏的 GUI，确认入口自己配置成功，然后实际调用分割、2D/3D 直方图和 `cuda_ast_model`。测试通过才打开交互 GUI。测试数据由脚本生成，不读取或改动实验数据。
+首次修复在独立 MATLAB 进程中先移除从启动器继承的私有 DLL 路径，再通过 `main.m` 打开隐藏的 GUI，确认入口自己配置成功，然后实际调用分割、2D/3D 直方图和该工具箱的定位 MEX：散光 `cuda_ast_model`，biplane `cuda_channel_specific_model`。两套均存在时分进程测试，全部通过后选择要打开的 GUI。测试通过才打开交互 GUI。测试数据由脚本生成，不读取或改动实验数据。
 
-已有 CUDA 13.4 可以保留。自动配置通过 `main.m` 在需要时设置当前 MATLAB 的进程 PATH；不修改系统 PATH、用户 `startup.m` 或其他 MATLAB 版本的安装目录，不安装旧显卡驱动，不替换项目的计算 MEX。微软运行库安装属于系统变更，只有缺失时才执行；如安装器要求重启，会明确提示，不自动重启。
+已有新版 CUDA 可以保留。自动配置通过 `main.m` 在需要时设置当前 MATLAB 的进程 PATH；不修改系统 PATH、用户 `startup.m` 或其他 MATLAB 版本的安装目录，不安装旧显卡驱动，不替换项目的计算 MEX。微软运行库安装属于系统变更，只有缺失时才执行；如安装器要求重启，会明确提示，不自动重启。
 
-日常入口是 **`main.m`**；直接绕过它调用 `INSPR_ast_GUI` 不会触发这段配置。保留项目中的 `deployment` 和 `runtime` 文件夹。恢复原入口时，可将 `deployment/backups` 中对应的原始 `main_*.m.bak` 复制回 `main.m`；如果安装后又改过 `main.m`，只移除 `BEGIN/END INSPR PRIVATE RUNTIME` 之间的块以保留后续修改。
+日常入口是 **`main.m`**；直接绕过它调用 `INSPR_ast_GUI` / `INSPR_GUI` 不会触发这段配置。保留项目中的 `deployment` 和 `runtime` 文件夹。恢复原入口时，可将 `deployment/backups` 中对应的原始 `*_main_*.m.bak`（旧版为 `main_*.m.bak`） 复制回 `main.m`；如果安装后又改过 `main.m`，只移除 `BEGIN/END INSPR PRIVATE RUNTIME` 之间的块以保留后续修改。
 
 ## 不同 MATLAB 版本
 
@@ -42,7 +42,7 @@
 把完整项目发给对方，在 MATLAB 中进入项目根目录，然后运行：
 
 ```matlab
-report = setup_inspr_cuda;
+report = setup_inspr_cuda('Toolbox', 'biplane'); % 或 astigmatism
 ```
 
 命令窗口会打印报告，并显示 UTF-8 文本报告的保存位置。把这个 `.txt` 文件发回来即可看到 MATLAB 版本、显卡和驱动、各 MEX 的 DLL 依赖，以及 `listGPUs` 的原始报错。报告含软件安装路径和本机路径。
@@ -50,7 +50,7 @@ report = setup_inspr_cuda;
 如果 CUDA 7.5 的 `bin` 目录已存在，脚本会尝试找到并加入当前 MATLAB 进程的 `PATH`。非默认安装位置可手动指定：
 
 ```matlab
-report = setup_inspr_cuda('RuntimeDirectory', 'D:\CUDA\v7.5\bin');
+report = setup_inspr_cuda('Toolbox', 'biplane', 'RuntimeDirectory', 'D:\CUDA\v7.5\bin');
 ```
 
 修复 ZIP 已附带**从官方软件包提取并校验签名**的 `runtime\win64\cudart64_75.dll`。诊断函数本身不下载安装运行库。不要把新版 DLL 重命名成旧版文件名。
@@ -67,12 +67,12 @@ main
 只检查文件和环境、不调用 GPU 枚举 MEX：
 
 ```matlab
-report = setup_inspr_cuda('TestGPU', false);
+report = setup_inspr_cuda('Toolbox', 'biplane', 'TestGPU', false);
 ```
 
 ## 为什么安装最新 CUDA 仍会弹窗
 
-原 GUI 的 3D 定位回调调用 `listGPUs`，并把所有异常统一显示为“Please install CUDA environment”。这既可能是路径问题，也可能是旧运行库、VC++ 运行库、MEX 兼容性等问题。现在该弹窗保留真实错误，并提示运行诊断脚本。
+原 GUI 的 3D 定位回调调用 `listGPUs`，并把所有异常统一显示为“Please install CUDA environment”。这既可能是路径问题，也可能是旧运行库、VC++ 运行库、MEX 兼容性等问题。原始 GUI 可能仍显示泛化提示；修复启动器会在日志中保留实际 MEX 错误。
 
 本次直接读取仓库中 Windows PE 导入表得到：
 
@@ -80,6 +80,7 @@ report = setup_inspr_cuda('TestGPU', false);
 |---|---|
 | `listGPUs.mexw64`：GPU 检查 | `cudart64_75.dll`、`MSVCR120.dll` |
 | `cuda_ast_model.mexw64`：3D GPU 定位 | `cudart64_75.dll`、`MSVCR120.dll` |
+| `cuda_channel_specific_model.mexw64`：biplane 3D GPU 定位 | `cudart64_75.dll`、`MSVCR120.dll` |
 | `SRsCMOS_MLE.mexw64`：2D GPU 定位 | `cudart64_75.dll`、`MSVCR120.dll` |
 | `GPUgaussMLE.mexw64`：可选初值估计 | `cudart64_70.dll`、`MSVCR120.dll` |
 | `cMakeSubregions.mexw64`：分割 | `MSVCR90.dll` |
@@ -123,7 +124,7 @@ report = setup_inspr_cuda('TestGPU', false);
 
 诊断脚本检测的 `ENUMERATION_RETURNED` 只表示枚举函数正常返回，仍需检查输出中的设备情况。它不会宣称定位已经通过，也不会以 MATLAB 的 `gpuDevice` 代替 INSPR 自己的 MEX 测试。
 
-不要用无参数 `cuda_ast_model()` 测试加载：该旧源码在检查参数数量前就访问输入指针，可能导致 MATLAB 崩溃。
+不要用无参数 `cuda_ast_model()` 或 `cuda_channel_specific_model()` 测试加载：该旧源码在检查参数数量前就访问输入指针，可能导致 MATLAB 崩溃。
 
 开发者可在项目根目录运行：
 
@@ -133,3 +134,13 @@ test_setup_inspr_cuda
 ```
 
 测试覆盖依赖解析、目录无关运行、重复运行、错误保留和验证边界；真实 2080 Ti 的完整定位仍需在接收方电脑上测试。
+
+## 双工具箱隔离与验证
+
+`-Toolbox auto`（默认）识别两条 `main.m` 路径，对每套分别备份配置并启动独立 MATLAB 自检。`-Toolbox biplane` / `-Toolbox astigmatism` 可限定目标，`-MatlabExe` 选择实际 MATLAB 安装。每套日志文件名均含其名称；某套失败时会继续检查另一套，最终返回失败且不自动打开 GUI。
+
+`inspr_toolbox_profile` 解析所选目录；`inspr_configure_paths` 配置对应代码路径并移除另一套的路径。如果另一套已在会话中加载，则要求新开 MATLAB，不清空用户数据来强行切换。直接运行各自 `main.m` 时配置自动生效；默认诊断在项目根目录且两套都存在时要求明确给出 Toolbox，避免默认猜错。
+
+biplane 自检使用原生产调用的 22 输入、5 输出、双 16×16 通道和 7 参数布局，包括非零配准平移和分割偏移；实际调用两个通道拟合并检查数值输出。自检不会处理实验数据，也不认证实验精度。
+
+开发验证还包括 `tests/test_dual_toolbox_install.ps1`（单 biplane、双入口、v1 升级、备份和重复运行）、`tests/test_biplane_runtime.m`（在独立 MATLAB 中执行），以及 `tests/test_distribution_layouts.ps1`（从真实 ZIP 解压测试三种安装布局，需要 GPU）。

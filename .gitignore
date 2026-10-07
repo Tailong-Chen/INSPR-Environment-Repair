@@ -7,3 +7,5 @@
 /runtime/win64/*.dll
 /tests/local_cuda_report.txt
 /INSPR for astigmatism-based setup/
+
+/INSPR for biplane setup/

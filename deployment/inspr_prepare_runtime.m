@@ -1,4 +1,4 @@
-function inspr_prepare_runtime(projectRoot)
+function inspr_prepare_runtime(projectRoot, toolbox)
 % Add this project's private CUDA DLL to the current MATLAB process.
 % Called automatically by main.m after the one-time repair. No installers,
 % GPU resets, savepath, startup.m edits, or changes to GUI state happen here.
@@ -7,6 +7,9 @@ if nargin < 1
 end
 if ~ispc || ~strcmp(computer('arch'), 'win64')
     error('INSPR:Runtime:Platform', 'The bundled INSPR MEX files require 64-bit Windows MATLAB.');
+end
+if nargin >= 2
+    inspr_configure_paths(inspr_toolbox_profile(projectRoot,toolbox));
 end
 runtime = fullfile(projectRoot, 'runtime', 'win64');
 if exist(fullfile(runtime, 'cudart64_75.dll'), 'file') ~= 2

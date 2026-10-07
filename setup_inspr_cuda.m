@@ -1,6 +1,7 @@
 function report = setup_inspr_cuda(varargin)
 %SETUP_INSPR_CUDA Diagnose the bundled Windows MEX files and repair session paths.
-%   report = setup_inspr_cuda
+%   report = setup_inspr_cuda('Toolbox', 'astigmatism')
+%   report = setup_inspr_cuda('Toolbox', 'biplane')
 %   report = setup_inspr_cuda('RuntimeDirectory', 'D:\trusted-cuda-runtime')
 %   report = setup_inspr_cuda('TestGPU', false, 'ReportFile', '')
 %
@@ -16,6 +17,7 @@ function report = setup_inspr_cuda(varargin)
 % MATLAB's own GPU stack). Enumeration is NOT a 3D localization smoke test.
 
 p = inputParser;
+addParameter(p, 'Toolbox', 'auto', @ischar);
 addParameter(p, 'RuntimeDirectory', '', @ischar);
 addParameter(p, 'ReportFile', fullfile(tempdir, ...
     ['inspr_cuda_' datestr(now, 'yyyymmdd_HHMMSS') '.txt']), @ischar); %#ok<DATST,TNOW1> Older MATLAB compatibility.
@@ -30,21 +32,16 @@ if ~isempty(opt.RuntimeDirectory) && exist(opt.RuntimeDirectory, 'dir') ~= 7
 end
 
 root = fileparts(mfilename('fullpath'));
-base = fullfile(root, 'INSPR for astigmatism-based setup');
-toolbox = fullfile(base, 'INSPR astigmatism toolbox');
-helpers = fullfile(base, 'Support', 'Helpers');
-projectPaths = {toolbox, fullfile(toolbox, 'Segmentation'), ...
-    fullfile(toolbox, 'INSPR_model_generation'), fullfile(toolbox, '2D_localization'), ...
-    fullfile(toolbox, '3D_localization'), fullfile(base, 'Support', 'PSF Toolbox'), ...
-    fullfile(base, 'Support', 'SRsCMOS'), helpers};
-if exist(fullfile(toolbox, 'main.m'), 'file') ~= 2
-    error('INSPR:CUDA:Project', 'Keep this script in the INSPR repository root.');
-end
-for k = numel(projectPaths):-1:1
-    addpath(projectPaths{k});
-end
+deployment = fullfile(root,'deployment');
+if ~any(strcmpi(regexp(path,pathsep,'split'),deployment)), addpath(deployment); end
+profile = inspr_toolbox_profile(root,opt.Toolbox);
+inspr_configure_paths(profile);
+toolbox = profile.directory;
+helpers = profile.helpers;
+projectPaths = profile.paths;
 
 report = struct;
+report.toolbox = profile.id;
 report.matlabVersion = version;
 report.matlabRoot = matlabroot;
 report.projectRoot = root;
@@ -60,10 +57,10 @@ if exist(smi, 'file') ~= 2, smi = 'nvidia-smi'; end
     ['"' smi '" --query-gpu=name,driver_version --format=csv,noheader']);
 [report.nvccStatus, report.nvcc] = system('nvcc --version');
 
-names = {'listGPUs', 'cuda_ast_model', 'SRsCMOS_MLE', ...
+names = {'listGPUs', profile.localizationMex, 'SRsCMOS_MLE', ...
     'GPUgaussMLE', 'cMakeSubregions', 'cHistRecon3D', 'cHistRecon'};
 files = {fullfile(helpers, 'listGPUs.mexw64'), ...
-    fullfile(toolbox, '3D_localization', 'cuda_ast_model.mexw64'), ...
+    fullfile(toolbox, '3D_localization', [profile.localizationMex '.mexw64']), ...
     fullfile(toolbox, '2D_localization', 'SRsCMOS_MLE.mexw64'), ...
     fullfile(helpers, 'GPUgaussMLE.mexw64'), ...
     fullfile(toolbox, 'Segmentation', 'cMakeSubregions.mexw64'), ...
@@ -72,6 +69,9 @@ roles = {'GPU enumeration', '3D GPU localization', '2D GPU localization', ...
     'optional Gaussian initializer (not used by the standard 3D call)', ...
     'segmentation, including CPU workflow', '3D reconstruction histogram', ...
     '2D reconstruction histogram'};
+if strcmp(profile.id,'biplane')
+    names(3) = []; files(3) = []; roles(3) = [];
+end
 allImports = {};
 for k = 1:numel(names)
     b = struct('name', names{k}, 'file', files{k}, 'role', roles{k}, ...
@@ -159,7 +159,7 @@ if opt.TestGPU
 end
 report.notes{end+1} = 'Enumeration returning does not prove a usable device or successful localization. Check its output and run a small representative 3D dataset.';
 report.notes{end+1} = 'RTX 2080 Ti requires compatible device code/PTX. If localization reports no kernel image/invalid device function, rebuild the MEX; PATH changes cannot fix it.';
-report.notes{end+1} = 'cuda_ast_model is deliberately not called without inputs: its source dereferences prhs before validating nrhs and can crash MATLAB.';
+report.notes{end+1} = [profile.localizationMex ' is deliberately not called without inputs: the native source dereferences prhs before validating nrhs.'];
 report.notes{end+1} = 'To start the GUI, change to the reported toolbox directory and run main. Session path changes disappear after MATLAB exits.';
 report.toolboxDirectory = toolbox;
 report.text = formatReport(report);
@@ -179,7 +179,7 @@ end
 
 function text = formatReport(r)
 lines = {'INSPR CUDA diagnostic (session-only path repair)', ...
-    ['MATLAB: ' r.matlabVersion], ['MATLAB root: ' r.matlabRoot], ...
+    ['Toolbox: ' r.toolbox], ['MATLAB: ' r.matlabVersion], ['MATLAB root: ' r.matlabRoot], ...
     ['OS: ' strtrim(r.os)], ['NVIDIA query: ' strtrim(r.nvidia)], ...
     ['nvcc query (not required for running prebuilt MEX): ' strtrim(r.nvcc)], ...
     ['GPU enumeration status: ' r.gpuCheck.status], ...

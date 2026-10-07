@@ -3,6 +3,7 @@
 param(
     [string]$ProjectRoot,
     [string]$MatlabExe,
+    [ValidateSet('auto','astigmatism','biplane')][string]$Toolbox = 'auto',
     [switch]$NoLaunch,
     [switch]$NoInstall,
     [switch]$ValidateOnly
@@ -15,6 +16,7 @@ foreach ($module in 'Utility','Management','Security') {
 }
 Set-StrictMode -Version Latest
 if (-not $ProjectRoot) { $ProjectRoot = Split-Path $PSScriptRoot -Parent }
+. (Join-Path $PSScriptRoot 'Get-INSPRToolboxes.ps1')
 
 function Resolve-PackageFile($Entry) {
     $file = [IO.Path]::GetFullPath((Join-Path $ProjectRoot $Entry.path))
@@ -90,10 +92,8 @@ try {
     foreach ($entry in $manifest.installers) { $installerFiles[$entry.version] = Resolve-PackageFile $entry }
     if ($ValidateOnly) { Write-Host 'PASS: all package hashes and publisher signatures are valid.'; exit 0 }
 
-    $toolbox = Join-Path $ProjectRoot 'INSPR for astigmatism-based setup\INSPR astigmatism toolbox'
-    if (-not (Test-Path -LiteralPath (Join-Path $toolbox 'main.m'))) {
-        throw 'Extract the repair ZIP into the existing INSPR-master project root (beside its README.md).'
-    }
+    $profiles = @(Get-INSPRToolboxes -ProjectRoot $ProjectRoot -Toolbox $Toolbox)
+    Write-Host ('Detected toolboxes: ' + (($profiles | ForEach-Object { $_.Id }) -join ', '))
     $logs = Join-Path $ProjectRoot 'deployment\logs'
     New-Item -ItemType Directory -Path $logs -Force | Out-Null
     $runId = (Get-Date -Format 'yyyyMMdd_HHmmss') + '_' + [guid]::NewGuid().ToString('N').Substring(0,8)
@@ -124,40 +124,53 @@ try {
         if (-not (Test-VCRuntime $entry.version)) { throw "VC++ $($entry.version) is still unavailable after installation." }
     }
 
-    & (Join-Path $PSScriptRoot 'Install-INSPRStartup.ps1') -ProjectRoot $ProjectRoot
+    & (Join-Path $PSScriptRoot 'Install-INSPRStartup.ps1') -ProjectRoot $ProjectRoot -Toolbox $Toolbox
     Write-Host '[4/5] Testing direct main.m startup, segmentation, reconstruction and GPU localization...'
     Write-Host 'The first GPU kernel compilation can take a few minutes.'
-    $env:INSPR_PROBE_STATUS = Join-Path $logs ($runId + '_status.txt')
-    $env:INSPR_PROBE_REPORT = Join-Path $logs ($runId + '_environment.txt')
-    $matlabLog = Join-Path $logs ($runId + '_matlab.txt')
-    # Environment variables avoid interpolating project paths into MATLAB code.
-    $probeCode = "try, addpath(fullfile(getenv('INSPR_PROJECT_ROOT'),'deployment')); inspr_runtime_probe; exit(0); catch ME, disp(getReport(ME,'extended','hyperlinks','off')); exit(1); end"
-    $arguments = '-wait -nosplash -nodesktop -logfile "{0}" -r "{1}"' -f $matlabLog,$probeCode
-    $probe = Start-Process -FilePath $matlab -ArgumentList $arguments -WorkingDirectory $ProjectRoot -WindowStyle Hidden -PassThru
-    $watch = [Diagnostics.Stopwatch]::StartNew()
-    while (-not $probe.WaitForExit(15000)) {
-        Write-Host ('GPU test running... {0:N0} seconds' -f $watch.Elapsed.TotalSeconds)
-        if ($watch.Elapsed.TotalSeconds -gt 300) {
-            # Terminate only the helper process tree that this run created.
-            if (-not $probe.HasExited) { & (Join-Path $env:SystemRoot 'System32\taskkill.exe') /PID $probe.Id /T /F | Out-Null }
-            throw "MATLAB validation timed out. Check $matlabLog (license dialogs or startup scripts may block MATLAB)."
+    $failures = @()
+    foreach ($profile in $profiles) {
+        Write-Host ('Testing toolbox: ' + $profile.Id)
+        $env:INSPR_TOOLBOX = $profile.Id
+        try {
+            $env:INSPR_PROBE_STATUS = Join-Path $logs ($runId + '_' + $profile.Id + '_status.txt')
+            $env:INSPR_PROBE_REPORT = Join-Path $logs ($runId + '_' + $profile.Id + '_environment.txt')
+            $matlabLog = Join-Path $logs ($runId + '_' + $profile.Id + '_matlab.txt')
+            # Environment variables avoid interpolating project paths into MATLAB code.
+            $probeCode = "try, addpath(fullfile(getenv('INSPR_PROJECT_ROOT'),'deployment')); inspr_runtime_probe; exit(0); catch ME, disp(getReport(ME,'extended','hyperlinks','off')); exit(1); end"
+            $arguments = '-wait -nosplash -nodesktop -logfile "{0}" -r "{1}"' -f $matlabLog,$probeCode
+            $probe = Start-Process -FilePath $matlab -ArgumentList $arguments -WorkingDirectory $ProjectRoot -WindowStyle Hidden -PassThru
+            $watch = [Diagnostics.Stopwatch]::StartNew()
+            while (-not $probe.WaitForExit(15000)) {
+                Write-Host ('GPU test running... {0:N0} seconds' -f $watch.Elapsed.TotalSeconds)
+                if ($watch.Elapsed.TotalSeconds -gt 300) {
+                    # Terminate only the helper process tree that this run created.
+                    if (-not $probe.HasExited) { & (Join-Path $env:SystemRoot 'System32\taskkill.exe') /PID $probe.Id /T /F | Out-Null }
+                    throw "MATLAB validation timed out. Check $matlabLog (license dialogs or startup scripts may block MATLAB)."
+                }
+            }
+            $probe.WaitForExit()
+            $status = ''
+            if (Test-Path -LiteralPath $env:INSPR_PROBE_STATUS) { $status = (Get-Content -LiteralPath $env:INSPR_PROBE_STATUS -Raw).Trim() }
+            if ($probe.ExitCode -ne 0 -or $status -ne 'INSPR_RUNTIME_OK') {
+                throw "$($profile.Id) GPU validation failed. $status`nFull MATLAB log: $matlabLog"
+            }
+            Write-Host ('PASS: ' + $profile.Id + ' startup and real GPU localization.') -ForegroundColor Green
+        } catch {
+            $failures += $_.Exception.Message
+            Write-Host $_.Exception.Message -ForegroundColor Red
         }
     }
-    $probe.WaitForExit()
-    $status = ''
-    if (Test-Path -LiteralPath $env:INSPR_PROBE_STATUS) { $status = (Get-Content -LiteralPath $env:INSPR_PROBE_STATUS -Raw).Trim() }
-    if ($probe.ExitCode -ne 0 -or $status -ne 'INSPR_RUNTIME_OK') {
-        throw "INSPR GPU validation failed. $status`nFull MATLAB log: $matlabLog"
-    }
-    Write-Host 'PASS: the actual INSPR GPU localization MEX ran successfully.' -ForegroundColor Green
+    if ($failures.Count -gt 0) { throw ($failures -join "`n") }
+    Write-Host 'PASS: all selected INSPR toolboxes ran their own GPU localization MEX successfully.' -ForegroundColor Green
     Write-Host 'One-time setup complete. In future, open MATLAB normally and run the project main.m.' -ForegroundColor Green
     Write-Host "Logs: $logs"
+    $env:INSPR_TOOLBOX = $Toolbox
     if (-not $NoLaunch) {
         Write-Host '[5/5] Opening INSPR in a configured MATLAB window...'
         $startCode = "addpath(fullfile(getenv('INSPR_PROJECT_ROOT'),'deployment')); inspr_start_gui;"
         $arguments = '-desktop -nosplash -r "{0}"' -f $startCode
         # This is the interactive application the recipient will use.
-        Start-Process -FilePath $matlab -ArgumentList $arguments -WorkingDirectory $toolbox -WindowStyle Normal | Out-Null
+        Start-Process -FilePath $matlab -ArgumentList $arguments -WorkingDirectory $ProjectRoot -WindowStyle Normal | Out-Null
     } else {
         Write-Host '[5/5] Verification complete (-NoLaunch).'
     }

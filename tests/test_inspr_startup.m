@@ -27,7 +27,7 @@ inspr_prepare_runtime(root);
 assert(strcmp(getenv('PATH'), configuredPath), 'Repeated setup duplicated the DLL path.');
 assert(isequaln(data_empupil, savedState), 'Runtime setup changed GUI state.');
 addpath(root);
-evalc('setup_inspr_cuda(''TestGPU'', false, ''ReportFile'', '''');');
+evalc('setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''TestGPU'', false, ''ReportFile'', '''');');
 result = inspr_gpu_smoketest;
 assert(result.passed);
 fprintf('PASS: direct main.m loaded the GUI and ran GPU localization without the launcher.\n');

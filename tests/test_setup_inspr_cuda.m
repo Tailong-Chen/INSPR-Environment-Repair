@@ -12,7 +12,7 @@ logFile = [tempname '.txt'];
 logCleanup = onCleanup(@() deleteLog(logFile));
 cd(tempdir);
 folderBefore = pwd;
-evalc('r = setup_inspr_cuda(''TestGPU'', false, ''ReportFile'', logFile);');
+evalc('r = setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''TestGPU'', false, ''ReportFile'', logFile);');
 assert(strcmp(pwd, folderBefore), 'Setup unexpectedly changed the current folder.');
 assert(strcmp(r.gpuCheck.status, 'NOT_RUN'));
 assert(~r.localizationVerified, 'Enumeration must not certify localization.');
@@ -28,11 +28,11 @@ assert(~isempty(strfind(fileread(logFile), 'cudart64_75.dll'))); %#ok<STREMP>
 assert(~isempty(which('INSPR_ast_GUI')) && ~isempty(which('loc_ast_model')));
 envAfter = getenv('PATH');
 pathAfter = path;
-evalc('setup_inspr_cuda(''TestGPU'', false, ''ReportFile'', '''');');
+evalc('setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''TestGPU'', false, ''ReportFile'', '''');');
 assert(strcmp(getenv('PATH'), envAfter), 'Repeated setup duplicates DLL paths.');
 assert(strcmp(path, pathAfter), 'Repeated setup duplicates MATLAB paths.');
 try
-    setup_inspr_cuda('RuntimeDirectory', fullfile(tempdir, 'inspr-no-such-folder-705'), ...
+    setup_inspr_cuda('Toolbox', 'astigmatism', 'RuntimeDirectory', fullfile(tempdir, 'inspr-no-such-folder-705'), ...
         'TestGPU', false, 'ReportFile', '');
     error('INSPR:Test:ExpectedError', 'Missing runtime directory was accepted.');
 catch ME
@@ -56,17 +56,17 @@ if isempty(r.dependencies(dep).file)
     bytes(153:154) = uint8([11 2]); % PE32+, empty import table
     fid = fopen(fullfile(fixtureFolder, 'cudart64_75.dll'), 'wb');
     fwrite(fid, bytes, 'uint8'); fclose(fid);
-    evalc('fixed = setup_inspr_cuda(''RuntimeDirectory'', fixtureFolder, ''TestGPU'', false, ''ReportFile'', '''');');
+    evalc('fixed = setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''RuntimeDirectory'', fixtureFolder, ''TestGPU'', false, ''ReportFile'', '''');');
     assert(strcmp(fixed.gpuCheck.status, 'NOT_RUN'));
     assert(any(strcmp(fixed.addedRuntimePaths, fixtureFolder)));
     fixedEnv = getenv('PATH');
-    evalc('setup_inspr_cuda(''RuntimeDirectory'', fixtureFolder, ''TestGPU'', false, ''ReportFile'', '''');');
+    evalc('setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''RuntimeDirectory'', fixtureFolder, ''TestGPU'', false, ''ReportFile'', '''');');
     assert(strcmp(getenv('PATH'), fixedEnv));
     clear fixtureCleanup; % Remove fixture and restore PATH before any MEX call.
 end
 % Exercise the real MEX boundary. Pass and fail are environment-dependent;
 % either way, the report must retain the evidence and never claim kernel QA.
-evalc('r = setup_inspr_cuda(''ReportFile'', '''');');
+evalc('r = setup_inspr_cuda(''Toolbox'', ''astigmatism'', ''ReportFile'', '''');');
 assert(~r.localizationVerified);
 assert(any(strcmp(r.gpuCheck.status, {'ENUMERATION_RETURNED', 'FAILED', 'SHADOWED'})));
 if strcmp(r.gpuCheck.status, 'FAILED')
